@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "sdk": "1.2",
+  "kind": "synth",
+  "description": "After Rings: a modal resonator and sympathetic, inharmonic and chorded strings, struck by each note.",
+  "identity": {
+    "engine": 40,
+    "page": 88
+  },
+  "presetDefaults": {
+    "amp": {
+      "attack": 0,
+      "sustain": 32767,
+      "release": 24000
+    }
+  }
+}

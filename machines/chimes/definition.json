@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "id": "chimes",
+  "name": "Chimes",
+  "parameters": [
+    {"id": "structure", "label": "Struct", "default": 0.6, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
+    {"id": "brightness", "label": "Bright", "default": 0.65, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
+    {"id": "damping", "label": "Damping", "default": 0.7, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
+    {"id": "position", "label": "Position", "default": 0.25, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
+    {"id": "model", "label": "Model", "control": 0, "default": 0.125, "mapping": {"kind": "enum", "labels": ["modal", "sympathetic", "string", "chord"]}, "display": "enum"}
+  ],
+  "presets": {
+    "Bell": {"structure": 0.6, "brightness": 0.65, "damping": 0.7, "position": 0.25, "model": 0.125},
+    "Handpan": {"structure": 0.28, "brightness": 0.35, "damping": 0.66, "position": 0.1, "model": 0.125},
+    "Marimba": {"structure": 0.28, "brightness": 0.35, "damping": 0.45, "position": 0.2, "model": 0.125},
+    "Sympathetic": {"structure": 0.55, "brightness": 0.6, "damping": 0.65, "position": 0.35, "model": 0.375},
+    "Pluck": {"structure": 0.25, "brightness": 0.5, "damping": 0.55, "position": 0.25, "model": 0.625},
+    "Twang": {"structure": 0.9, "brightness": 0.7, "damping": 0.6, "position": 0.15, "model": 0.625},
+    "Chord": {"structure": 0.4, "brightness": 0.55, "damping": 0.7, "position": 0.3, "model": 0.875}
+  },
+  "resources": {
+    "voiceBytes": 472, "voiceAlignment": 4, "voiceCapacity": 64, "sharedBytes": 208996,
+    "outputPeakQ31": 1073741824,
+    "display": {"stateBytes": 116, "stateAlignment": 4, "paths": 4, "points": 39, "nodes": 4, "texts": 0, "palette": 3}
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "reference": {
+    "source": "reference.cpp",
+    "eurorack": ["rings/dsp/part.cc", "rings/dsp/string.cc", "rings/dsp/resonator.cc", "rings/dsp/fm_voice.cc",
+                 "rings/resources.cc"],
+    "stmlib": ["dsp/units.cc", "utils/random.cc"],
+    "defines": ["TEST"]
+  },
+  "probe": {
+    "source": "probe.cpp",
+    "machine": "machines/chimes"
+  }
+}
