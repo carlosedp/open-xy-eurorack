@@ -24,6 +24,17 @@ Rings' meanings. Pressing the first switches it to **Model** and back.
 - **Damping** sets the decay, to an endless ring at the top of its range.
 - **Position** sets where the resonator is struck and heard.
 
+Values read 0–99, as on the stock engines: a control's travel × 99, rounded.
+Each value n recalls exactly as n / 99, and Shift + turn moves between the
+steps. The landmarks fall on round numbers:
+
+- **Struct 25** is harmonic in every model: Rings' stiffness and dispersion are zero there.
+- **Position 50** is the middle.
+- **Damping 99** rings without end.
+- **In the chord model**, Struct's eleven intervals centre on 0, 10, 20 … 90 and 99.
+
+The presets and defaults sit on whole values.
+
 The screen shows twelve chimes hanging on cords from a rail, one for each
 modal partial:
 

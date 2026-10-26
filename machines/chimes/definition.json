@@ -3,20 +3,20 @@
   "id": "chimes",
   "name": "Chimes",
   "parameters": [
-    {"id": "structure", "label": "Struct", "default": 0.6, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
-    {"id": "brightness", "label": "Bright", "default": 0.65, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
-    {"id": "damping", "label": "Damping", "default": 0.7, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
-    {"id": "position", "label": "Position", "default": 0.25, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
+    {"id": "structure", "label": "Struct", "default": 0.6060606060606061, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
+    {"id": "brightness", "label": "Bright", "default": 0.6565656565656566, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
+    {"id": "damping", "label": "Damping", "default": 0.7070707070707071, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
+    {"id": "position", "label": "Position", "default": 0.25252525252525254, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
     {"id": "model", "label": "Model", "control": 0, "default": 0.125, "mapping": {"kind": "enum", "labels": ["modal", "sympathetic", "string", "chord"]}, "display": "enum"}
   ],
   "presets": {
-    "Bell": {"structure": 0.6, "brightness": 0.65, "damping": 0.7, "position": 0.25, "model": 0.125},
-    "Handpan": {"structure": 0.28, "brightness": 0.35, "damping": 0.66, "position": 0.1, "model": 0.125},
-    "Marimba": {"structure": 0.28, "brightness": 0.35, "damping": 0.45, "position": 0.2, "model": 0.125},
-    "Sympathetic": {"structure": 0.55, "brightness": 0.6, "damping": 0.65, "position": 0.35, "model": 0.375},
-    "Pluck": {"structure": 0.25, "brightness": 0.5, "damping": 0.55, "position": 0.25, "model": 0.625},
-    "Twang": {"structure": 0.9, "brightness": 0.7, "damping": 0.6, "position": 0.15, "model": 0.625},
-    "Chord": {"structure": 0.4, "brightness": 0.55, "damping": 0.7, "position": 0.3, "model": 0.875}
+    "Bell": {"structure": 0.6060606060606061, "brightness": 0.6565656565656566, "damping": 0.7070707070707071, "position": 0.25252525252525254, "model": 0.125},
+    "Handpan": {"structure": 0.2828282828282828, "brightness": 0.35353535353535354, "damping": 0.6666666666666666, "position": 0.10101010101010101, "model": 0.125},
+    "Marimba": {"structure": 0.2828282828282828, "brightness": 0.35353535353535354, "damping": 0.45454545454545453, "position": 0.20202020202020202, "model": 0.125},
+    "Sympathetic": {"structure": 0.5555555555555556, "brightness": 0.6060606060606061, "damping": 0.6565656565656566, "position": 0.35353535353535354, "model": 0.375},
+    "Pluck": {"structure": 0.25252525252525254, "brightness": 0.5050505050505051, "damping": 0.5555555555555556, "position": 0.25252525252525254, "model": 0.625},
+    "Twang": {"structure": 0.9090909090909091, "brightness": 0.7070707070707071, "damping": 0.6060606060606061, "position": 0.15151515151515152, "model": 0.625},
+    "Chord": {"structure": 0.40404040404040403, "brightness": 0.5555555555555556, "damping": 0.7070707070707071, "position": 0.30303030303030304, "model": 0.875}
   },
   "resources": {
     "voiceBytes": 472, "voiceAlignment": 4, "voiceCapacity": 64, "sharedBytes": 208996,

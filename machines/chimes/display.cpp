@@ -58,6 +58,16 @@ inline void chime_lengths(i32 structure, i32* out) {
     }
 }
 
+// A control as the stock engines show one: its travel as 0..99, rounded, so
+// that n reads back exactly from n / 99. The parameter keeps its full
+// precision; Shift + turn moves between the steps.
+inline void caption(char* out, i32 value) {
+    const u32 n = ((static_cast<u32>(control(value)) >> 16) * 99 + 16383) / 32767;
+    if (n >= 10) *out++ = static_cast<char>('0' + n / 10);
+    *out++ = static_cast<char>('0' + n % 10);
+    *out = 0;
+}
+
 inline void display_reset(DisplayState& state) {
     for (unsigned i = 0; i < kTubes; ++i) state.swing[i] = state.phase[i] = 0;
     state.serial = state.track = state.initialized = 0;
@@ -72,8 +82,13 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
     const u32 model = (static_cast<u32>(control(input.slots[4])) >> 16) * kModels >> 15;
     const u32 chord = ((static_cast<u32>(structure) >> 8) * 10 + (1u << 22)) >> 23;
 
-    // The first encoder names the model, or in the chord model the chord.
-    for (u32 p = 0; p < opxy::page_controls; ++p) draw::header(frame, p, "");
+    // Values read 0..99, as on the stock engines; the first encoder names the
+    // model, or in the chord model the chord.
+    for (u32 p = 0; p < opxy::page_controls; ++p) {
+        char value[3];
+        caption(value, input.parameters[p]);
+        draw::header(frame, p, value);
+    }
     if (input.shown[0] == 4) {
         draw::header(frame, 0, kModelNames[model]);
     } else if (model == kChord) {

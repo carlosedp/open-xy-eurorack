@@ -2,7 +2,9 @@
 // python sdk.py test --machine <folder>. Each check prints FAIL and the
 // measurement when it does not hold.
 #include "../engine.cpp"
+#include "../display.cpp"
 #include <cmath>
+#include <cstring>
 #include <cstdio>
 #include <vector>
 
@@ -109,6 +111,18 @@ double ringing(const std::vector<double>& x) { return rms(x, 0.28, 0.32) / rms(x
 
 int main() {
     const char* names[] = {"modal", "sympathetic", "string", "chord"};
+    // Captions read 0..99 as on the stock engines: n / 99 shows n, full travel 99.
+    for (int n = 0; n <= 99; ++n) {
+        char shown[3], expected[3];
+        chimes::caption(shown, q31(n / 99.0));
+        std::snprintf(expected, sizeof(expected), "%d", n);
+        check(std::strcmp(shown, expected) == 0, "n / 99 reads n", n);
+    }
+    {
+        char shown[3];
+        chimes::caption(shown, 0x7fffffff);
+        check(std::strcmp(shown, "99") == 0, "full travel reads 99", 99);
+    }
     // Silence until struck.
     for (unsigned m = 0; m < chimes::kModels; ++m) {
         const Settings s = {m, 0.5, 0.5, 0.5, 0.5};
