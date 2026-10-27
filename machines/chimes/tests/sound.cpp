@@ -208,6 +208,25 @@ int main() {
         chimes::destroy(voices[0], shared, 1);
     }
 
+    // A gliding note retunes its partials a quarter at a time: four blocks after
+    // the glide stops, every partial is tuned as a note struck at that pitch.
+    {
+        static chimes::Voice glided, fresh;
+        const i32 structure = q31(0.6), brightness = q31(0.7), damping = q31(0.8);
+        const u32 target = increment(392);
+        u32 pitch = increment(330);
+        while (pitch < target) {
+            chimes::tune_modes(glided, pitch, structure, brightness, damping);
+            pitch += target / 4000 + 1;
+        }
+        for (unsigned b = 0; b < 4; ++b) chimes::tune_modes(glided, target, structure, brightness, damping);
+        chimes::tune_modes(fresh, target, structure, brightness, damping);
+        bool same = glided.count == fresh.count;
+        for (unsigned i = 0; i < fresh.count; ++i)
+            same = same && glided.rg[i] == fresh.rg[i] && glided.hg[i] == fresh.hg[i] && glided.g2[i] == fresh.g2[i];
+        check(same, "a glide's partials catch up within four blocks", glided.count);
+    }
+
     // The levels, for setting the output scale against the core machines.
     for (unsigned m = 0; m < chimes::kModels; ++m) {
         const Settings s = {m, 0.4, 0.6, 0.6, 0.3};

@@ -44,8 +44,9 @@ modal partial:
 - **Bright** dims the shortest chimes.
 - The first encoder's header names the model, or the interval in the chord model.
 
-Presets: Bell, Handpan (harmonic modal partials, the octave and compound
-fifth over a soft top, a long ring), Marimba, Sympathetic, Pluck, Twang and Chord.
+Presets: Bell, Handpan (nearly harmonic modal partials, slightly stretched
+toward metal, with a long ring), Marimba, Glocken (stiff, bright bars, as a
+glockenspiel's), Sympathetic, Pluck, Twang and Chord.
 
 ```sh
 python ../open-xy/sdk.py test --machine machines/chimes
@@ -97,16 +98,27 @@ comb (17,408 bytes) from a pool of 12. When the pool is full the oldest lease
 is stolen and that voice falls silent until struck again. The modal model
 needs no lease.
 
-From the pinned compiler's Blackfin output, at polyphony 4's sizes:
+Measured on an OP-XY with the SDK's hardware benchmark (`opxy-synth-c8-v1`:
+note 60, the four main controls at their middle, the modal model), as a share
+of the 580,352-cycle block, median of three runs:
 
-| Model | Instructions per 64-sample block |
+| Part | Share of the block |
 | --- | --- |
-| Modal | About 12,000 for the partials, plus about 3,500 for the limiter and coupling |
-| Sympathetic or chord | About 13,500, and about 4,000 more while the pluck rings (tens of milliseconds) |
-| String, Structure 0.26–0.82 | About 10,000 |
-| String, either end of Structure | About 15,000 |
+| A whole voice, with stock's filter and envelope | About 4.5% |
+| Each of the 12 partials | About 0.19% |
+| The output's AC coupling and limiter | About 0.64% |
+| Stock's filter and envelope alone | About 0.80% |
 
-These are instructions, not cycles. `sdk.py test`'s host-timed estimate reads
-several times higher: on the host, `q31::multiply`, which Chimes uses for nearly
-every product, is a 64-bit multiply with a rounding correction, and on the
-Blackfin it is one instruction. A hardware measurement is still to be made.
+The partials run in a loop of their own, which the compiler makes a Blackfin
+hardware loop; inlined into the loop over partials it branches each sample.
+The coupling, the limiter's gain and the soft limit are three passes over the
+block, each within the Blackfin's registers. Rings retunes its partials every
+block; here a control's move retunes them all, and a note's move retunes a
+quarter of them a block, in turn, which catches up within four blocks. The
+strike's filter is set up only while it rings. None of this changes the
+output. Fewer partials save about 0.19% each, at an audible cost: Chimes keeps
+Rings' twelve.
+
+`sdk.py test`'s host-timed estimate reads several times higher: on the host,
+`q31::multiply`, which Chimes uses for nearly every product, is a 64-bit
+multiply with a rounding correction, and on the Blackfin it is one instruction.

@@ -3,3 +3,7 @@ local/
 __pycache__/
 *.pyc
 .DS_Store
+
+# Each machine's upstream licence and provenance, which a global ignore of
+# vendor/ folders would otherwise leave out.
+!machines/*/vendor/

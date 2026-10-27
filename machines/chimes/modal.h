@@ -54,14 +54,31 @@ inline i32 strike_cutoff(u32 frequency, i32 cutoff) {
 }
 
 // Partial frequencies, Q and position weights, as Resonator::ComputeFilters.
-// Recomputed only when the note or a control moves.
+// Rings recomputes them every block. Here a control's move recomputes them
+// all; a note's move by more than 2^-13 of itself (a fifth of a cent; stock's
+// pitch drifts by more from block to block) recomputes a quarter of them a
+// block, in turn, at the latest pitch, until every quarter has it: four
+// blocks, under 6 ms.
 inline void tune_modes(Voice& voice, u32 frequency, i32 structure, i32 brightness, i32 damping) {
-    if (voice.key[0] == frequency && voice.key[1] == static_cast<u32>(structure) &&
-        voice.key[2] == static_cast<u32>(brightness) && voice.key[3] == static_cast<u32>(damping)) return;
-    voice.key[0] = frequency;
-    voice.key[1] = static_cast<u32>(structure);
-    voice.key[2] = static_cast<u32>(brightness);
-    voice.key[3] = static_cast<u32>(damping);
+    const bool controls = voice.key[1] == static_cast<u32>(structure) && voice.key[2] == static_cast<u32>(brightness) &&
+                          voice.key[3] == static_cast<u32>(damping);
+    const u32 drift = frequency > voice.key[0] ? frequency - voice.key[0] : voice.key[0] - frequency;
+    const bool all = !controls || !voice.count;
+    if (all) {
+        voice.key[1] = static_cast<u32>(structure);
+        voice.key[2] = static_cast<u32>(brightness);
+        voice.key[3] = static_cast<u32>(damping);
+        voice.pending = 0;
+    } else if (drift > voice.key[0] >> 13) {
+        voice.pending = 4;
+    }
+    if (all || drift > voice.key[0] >> 13) voice.key[0] = frequency;
+    if (!all) {
+        if (!voice.pending) return;
+        --voice.pending;
+        voice.quarter = (voice.quarter + 1) & 3;
+    }
+    frequency = voice.key[0];
     i32 stiffness = lookup(kStiffness, structure);                // Q26
     // 500 x 10^(4 damping), Q8. Q here is 1 + partial q with the partial as a
     // share of the sample rate, so q scales by 44.1 / 48 to keep Rings' decay times.
@@ -80,13 +97,16 @@ inline void tune_modes(Voice& voice, u32 frequency, i32 structure, i32 brightnes
     for (; count < kModes; ++count) {
         const u32 partial = count ? multiply_shift(harmonic, stretch, 23) : frequency >> 1;  // Q31
         if (partial >= kNyquistLimit) break;
-        const i32 g = tan_fast(static_cast<i32>(partial));
-        const u32 resonance = 256 + multiply_shift(partial, q, 31);  // 1 + partial q, Q8
-        const u32 r = reciprocal(resonance, 39);                    // Q31
-        const Coefficients c = coefficients(g, r >= 0x80000000u ? kMaximum : static_cast<i32>(r));
-        voice.rg[count] = c.rg;
-        voice.hg[count] = c.hg;
-        voice.g2[count] = 2 * c.g;
+        // This block's quarter, and any partial new below Nyquist.
+        if (all || (count & 3) == voice.quarter || count >= voice.count) {
+            const i32 g = tan_fast(static_cast<i32>(partial));
+            const u32 resonance = 256 + multiply_shift(partial, q, 31);  // 1 + partial q, Q8
+            const u32 r = reciprocal(resonance, 39);                    // Q31
+            const Coefficients c = coefficients(g, r >= 0x80000000u ? kMaximum : static_cast<i32>(r));
+            voice.rg[count] = c.rg;
+            voice.hg[count] = c.hg;
+            voice.g2[count] = 2 * c.g;
+        }
         stretch = static_cast<u32>(static_cast<i32>(stretch) + stiffness);
         // Partials do not fold back into negative frequencies; a few extra
         // partials reach the highest frequencies.
@@ -119,6 +139,28 @@ inline void position_weights(i32* weights, unsigned count, i32 position) {
     }
 }
 
+// One partial through the block, adding it to out by its weight: odd partials
+// (the first, third...) add, even ones subtract. kExcited feeds it the strike.
+// Kept out of line: inlined into the loop over partials, the compiler gives
+// this loop a branch each sample instead of a Blackfin hardware loop.
+template <bool kExcited>
+__attribute__((noinline)) void render_partial(Voice& voice, unsigned i, const i32* targets,
+                                              const i32* __restrict input, i32* __restrict out) {
+    i32 s1 = voice.modes[i].s1, s2 = voice.modes[i].s2;
+    const i32 rg = voice.rg[i], hg = voice.hg[i], g2 = voice.g2[i];
+    const i32 weight = i & 1 ? -targets[i] : targets[i];
+    for (unsigned n = 0; n < opxy::block_frames; ++n) {
+        const i32 sum = out[n];
+        const i32 v = mul31((kExcited ? input[n] : 0) - s2 - mul28(s1, rg), hg);
+        const i32 bp = s1 + v;
+        s1 = bp + v;
+        s2 += mul28(bp, g2);
+        out[n] = sum + mul31(bp, weight);
+    }
+    voice.modes[i].s1 = s1;
+    voice.modes[i].s2 = s2;
+}
+
 // Runs the strike through its low-pass into the partials, adding them to out
 // (Q26) as Rings sends a voice out at polyphony 4: the odd partials less the
 // even (the first, third... less the second, fourth...). A strike is Rings'
@@ -132,16 +174,17 @@ inline void render_modal(Voice& voice, u32 frequency, i32 structure, i32 brightn
     i32 targets[kModes];
     position_weights(targets, voice.count, position);
 
-    // The strike, low-passed, at an eighth into the partials.
-    const i32 cutoff = bend(brightness);
-    const i32 fc = strike_cutoff(frequency, cutoff);
-    const i32 ratio = tan_dirty_ratio(fc);                              // g / fc, Q28
-    const Coefficients c = coefficients(mul31(ratio, fc), 1431655765);  // Q 1.5
+    // The strike, low-passed, at an eighth into the partials. Its filter is set
+    // up only while it rings.
     Svf& exciter = voice.exciter;
     if (absolute(exciter.s1) < 64 && absolute(exciter.s2) < 64) exciter.s1 = exciter.s2 = 0;
     const bool excited = strike || exciter.s1 || exciter.s2;
     i32 input[opxy::block_frames];
     if (excited) {
+        const i32 cutoff = bend(brightness);
+        const i32 fc = strike_cutoff(frequency, cutoff);
+        const i32 ratio = tan_dirty_ratio(fc);                              // g / fc, Q28
+        const Coefficients c = coefficients(mul31(ratio, fc), 1431655765);  // Q 1.5
         for (unsigned n = 0; n < opxy::block_frames; ++n) input[n] = low_pass(exciter, c, 0);
         if (strike) {
             const i32 pulse = static_cast<i32>(exp2(mul31(mul31(fc, fc), 2 << 16), 24));  // 0.25 x 2^(2 fc^2), Q26
@@ -158,29 +201,10 @@ inline void render_modal(Voice& voice, u32 frequency, i32 structure, i32 brightn
     }
 
     // Position weights change once per block; Rings interpolates them per sample.
-    for (unsigned i = 0; i < voice.count; ++i) {
-        i32 s1 = voice.modes[i].s1, s2 = voice.modes[i].s2;
-        const i32 rg = voice.rg[i], hg = voice.hg[i], g2 = voice.g2[i];
-        const i32 weight = i & 1 ? -targets[i] : targets[i];
-        if (excited) {
-            for (unsigned n = 0; n < opxy::block_frames; ++n) {
-                const i32 v = mul31(input[n] - mul28(s1, rg) - s2, hg);
-                const i32 bp = s1 + v;
-                s1 = bp + v;
-                s2 += mul28(bp, g2);
-                out[n] += mul31(bp, weight);
-            }
-        } else {
-            for (unsigned n = 0; n < opxy::block_frames; ++n) {
-                const i32 v = mul31(-mul28(s1, rg) - s2, hg);
-                const i32 bp = s1 + v;
-                s1 = bp + v;
-                s2 += mul28(bp, g2);
-                out[n] += mul31(bp, weight);
-            }
-        }
-        voice.modes[i].s1 = s1;
-        voice.modes[i].s2 = s2;
+    if (excited) {
+        for (unsigned i = 0; i < voice.count; ++i) render_partial<true>(voice, i, targets, input, out);
+    } else {
+        for (unsigned i = 0; i < voice.count; ++i) render_partial<false>(voice, i, targets, input, out);
     }
 }
 }  // namespace chimes

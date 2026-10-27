@@ -92,22 +92,25 @@ inline void render(Voice& voice, Shared& shared, u32 owner, opxy::Output output,
     // 1.0. With one voice on one output, Rings' stereo peak, the largest of
     // left, right and their difference, is this voice's. Here the peak is
     // measured before the gain, and the scale, which includes the gain,
-    // follows it every 8 samples.
+    // follows it every 8 samples. Each stage is a pass over the block, which
+    // leaves the Blackfin's registers enough for it.
+    DcBlocker coupling = voice.coupling;
+    for (unsigned i = 0; i < opxy::block_frames; ++i) out[i] = coupling.process<11>(out[i]);
+    voice.coupling = coupling;
     const i32 gain = kModelGain[model];
     const u32 threshold = reciprocal(static_cast<u32>(gain), 54);  // 1 / gain, Q26
     i32 peak = voice.peak;
-    DcBlocker coupling = voice.coupling;
     for (unsigned i = 0; i < opxy::block_frames; i += 8) {
         const i32 scale = static_cast<u32>(peak) <= threshold
                               ? mul31(gain, kLimit)  // Q28
                               : static_cast<i32>(multiply_shift(reciprocal(static_cast<u32>(peak), 57), kLimit, 34));
         for (unsigned j = i; j < i + 8; ++j) {
-            const i32 x = coupling.process<11>(out[j]), level = absolute(x);
+            const i32 x = out[j], level = absolute(x);
             peak += mul31(level - peak, level > peak ? kAttack : kRelease);
-            output[j] = soft_limit(mul28(x, scale)) * kLevel;
+            out[j] = mul28(x, scale);
         }
     }
     voice.peak = peak;
-    voice.coupling = coupling;
+    for (unsigned i = 0; i < opxy::block_frames; ++i) output[i] = soft_limit(out[i]) * kLevel;
 }
 }  // namespace chimes

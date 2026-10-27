@@ -57,6 +57,8 @@ struct Voice {
     i32 rg[kModes], hg[kModes], g2[kModes];
     u32 count;    // partials below 0.49 of the sample rate
     u32 key[4];   // the frequency and controls the coefficients were computed for
+    u32 pending;  // blocks left retuning a quarter of the partials to key[0]
+    u32 quarter;  // the quarter retuned last
     Svf exciter;  // the strike's low-pass
     // Strings and the plucker that excites them.
     String strings[kStrings];
