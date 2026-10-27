@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "id": "cirrus",
+  "name": "Cirrus",
+  "parameters": [
+    {"id": "position", "label": "Position", "default": 0.0, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
+    {"id": "size", "label": "Size", "default": 0.5050505050505051, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
+    {"id": "density", "label": "Density", "default": 0.8080808080808081, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
+    {"id": "texture", "label": "Texture", "default": 0.5050505050505051, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
+    {"id": "pitch", "label": "Pitch", "default": 0.5050505050505051, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
+    {"id": "speed", "label": "Speed", "default": 0.7575757575757576, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
+    {"id": "spread", "label": "Spread", "default": 0.5050505050505051, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"}
+  ],
+  "presets": {
+    "Cloud": {"position": 0.0, "size": 0.5050505050505051, "density": 0.8080808080808081, "texture": 0.5050505050505051, "pitch": 0.5050505050505051, "speed": 0.7575757575757576, "spread": 0.5050505050505051},
+    "Stretch": {"position": 0.0, "size": 0.7070707070707071, "density": 0.8585858585858586, "texture": 0.7070707070707071, "pitch": 0.5050505050505051, "speed": 0.6262626262626263, "spread": 0.30303030303030304},
+    "Stutter": {"position": 0.0, "size": 0.15151515151515152, "density": 0.30303030303030304, "texture": 0.15151515151515152, "pitch": 0.5050505050505051, "speed": 1.0, "spread": 0.0},
+    "Octave Down": {"position": 0.20202020202020202, "size": 0.7070707070707071, "density": 0.8686868686868687, "texture": 0.6666666666666666, "pitch": 0.0707070707070707, "speed": 0.7575757575757576, "spread": 0.6060606060606061},
+    "Frozen": {"position": 0.30303030303030304, "size": 0.6060606060606061, "density": 0.9090909090909091, "texture": 0.7575757575757576, "pitch": 0.5050505050505051, "speed": 0.5050505050505051, "spread": 0.7070707070707071},
+    "Rewind": {"position": 0.5050505050505051, "size": 0.40404040404040403, "density": 0.8080808080808081, "texture": 0.6060606060606061, "pitch": 0.5050505050505051, "speed": 0.25252525252525254, "spread": 0.40404040404040403}
+  },
+  "resources": {"voiceCapacity": 256, "stereoOutput": 1}
+}

@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "id": "cumulus",
+  "name": "Cumulus",
+  "parameters": [
+    {"id": "position", "label": "Position", "default": 0.20202020202020202, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
+    {"id": "size", "label": "Size", "default": 0.5050505050505051, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
+    {"id": "pitch", "label": "Pitch", "default": 0.5050505050505051, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
+    {"id": "density", "label": "Density", "default": 0.8080808080808081, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
+    {"id": "freeze", "label": "Freeze", "control": 0, "default": 0.25, "mapping": {"kind": "enum", "labels": ["off", "on"]}, "display": "enum"},
+    {"id": "texture", "label": "Texture", "control": 1, "default": 0.5050505050505051, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
+    {"id": "dry", "label": "Dry", "control": 2, "default": 0.0, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
+    {"id": "reverb", "label": "Reverb", "control": 3, "default": 0.0, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"}
+  ],
+  "presets": {
+    "Cloud": {"position": 0.20202020202020202, "size": 0.5050505050505051, "pitch": 0.5050505050505051, "density": 0.8080808080808081, "freeze": 0.25, "texture": 0.5050505050505051, "dry": 0.0, "reverb": 0.0},
+    "Shimmer": {"position": 0.30303030303030304, "size": 0.6060606060606061, "pitch": 0.9292929292929293, "density": 0.8888888888888888, "freeze": 0.25, "texture": 0.8585858585858586, "dry": 0.0, "reverb": 0.6060606060606061},
+    "Stutter": {"position": 0.10101010101010101, "size": 0.15151515151515152, "pitch": 0.5050505050505051, "density": 0.30303030303030304, "freeze": 0.25, "texture": 0.15151515151515152, "dry": 0.0, "reverb": 0.0},
+    "Octave Down": {"position": 0.40404040404040403, "size": 0.7070707070707071, "pitch": 0.0707070707070707, "density": 0.8585858585858586, "freeze": 0.25, "texture": 0.6565656565656566, "dry": 0.0, "reverb": 0.40404040404040403},
+    "Wash": {"position": 0.6060606060606061, "size": 0.8080808080808081, "pitch": 0.5050505050505051, "density": 0.9090909090909091, "freeze": 0.25, "texture": 0.9595959595959596, "dry": 0.0, "reverb": 0.8080808080808081},
+    "Crackle": {"position": 0.20202020202020202, "size": 0.25252525252525254, "pitch": 0.5050505050505051, "density": 1.0, "freeze": 0.25, "texture": 0.10101010101010101, "dry": 0.0, "reverb": 0.20202020202020202}
+  },
+  "resources": {"bufferBytes": 465748}
+}

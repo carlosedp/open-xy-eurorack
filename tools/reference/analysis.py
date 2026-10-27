@@ -26,11 +26,12 @@ class Harness:
         if not self.path.exists():
             raise SystemExit(f'{self.path} is missing: python tools/reference/build.py {module}')
 
-    def render(self, *arguments, seed=None):
-        """Runs the harness with its arguments, then the output file and the seed; returns the samples."""
+    def render(self, *arguments, seed=None, extra=()):
+        """Runs the harness with its arguments, then the output file, the seed and any extra arguments
+        (which need a seed); returns the samples."""
         with tempfile.TemporaryDirectory() as folder:
             out = Path(folder) / 'out.f32'
-            tail = [str(out)] + ([str(seed)] if seed is not None else [])
+            tail = [str(out)] + ([str(seed)] if seed is not None else []) + [str(e) for e in extra]
             subprocess.run([str(self.path), *map(str, arguments), *tail], check=True, capture_output=True)
             return np.fromfile(out, np.float32).astype(np.float64)
 

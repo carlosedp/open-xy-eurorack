@@ -38,7 +38,8 @@ def entry(machine):
         call = ('b, ' if buffer else '') + ('t, ' if transport else '')
         return (f'#include "fx.cpp"\nvoid entry({ns}::State& s, {buffer}{transport}opxy::Channel l, opxy::Channel r,'
                 f' opxy::Parameters p) {{ {ns}::process(s, {call}l, r, p); }}\n')
-    sys.exit('Sample engines: pass their sample.cpp through --source instead')
+    return (f'#include "sample.cpp"\nvoid entry({ns}::Voice& v, const opxy::SampleBlock& b) {{'
+            f' {ns}::render_sample(v, b); }}\n')
 
 
 def instruction(line):

@@ -8,8 +8,10 @@ which the OP-XY's Blackfin does not have.
 | Machine | Kind | After |
 | --- | --- | --- |
 | [Chimes](machines/chimes) | Synth | Rings: modal resonator, sympathetic, inharmonic and chorded strings |
+| [Cumulus](machines/cumulus) | Send effect | Clouds: granular recording with Freeze and reverb |
+| [Cirrus](machines/cirrus) | Sample instrument | Clouds: a sample played as grains from the keyboard, scanned at its own speed |
 
-Clouds and Beads are planned as send effects.
+Beads is planned as a send effect.
 
 "Mutable Instruments" is a registered trademark. These machines are not
 affiliated with or endorsed by Mutable Instruments, and the name is used here only
@@ -26,7 +28,7 @@ the host and compares a port with it, and a Blackfin instruction counter.
 Clone the SDK next to this repository, then from here:
 
 ```sh
-python ../open-xy/sdk.py test --machine machines/chimes
+python ../open-xy/sdk.py test --machine machines/chimes --machine machines/cumulus --machine machines/cirrus
 python ../open-xy/sdk.py preview --machine machines/chimes --out ../previews/chimes-001
 python ../open-xy/tools/serve_harness.py --preview ../previews/chimes-001
 ```

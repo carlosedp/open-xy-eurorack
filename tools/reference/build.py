@@ -1,7 +1,8 @@
-# Builds a module's two host harnesses into local/reference/<module>/:
+# Builds a module's host harnesses into local/reference/<module>/:
 #   reference  the upstream float code, at its own sample rate
 #   probe      this repository's machine, through its engine.cpp or fx.cpp
-# Each tools/reference/<module>/build.json names the sources. From the
+# and any further probes, one for each other machine after the module, named
+# by build.json's "probes". Each tools/reference/<module>/build.json names the sources. From the
 # repository root, after tools/reference/upstream.py:
 #   python tools/reference/build.py rings [--cxx clang++] [--sdk ../open-xy]
 import argparse
@@ -48,11 +49,11 @@ def main():
                         *(stmlib / s for s in reference['stmlib'])],
              [UPSTREAM, eurorack], [*host, *reference.get('defines', [])], out / ('reference' + suffix), False)
 
-    probe = spec['probe']
-    machine = ROOT / probe['machine']
-    compile_(args.cxx, [here / probe['source']], [Path(args.sdk) / 'sdk' / 'include', machine], host,
-             out / ('probe' + suffix), True)
-    print(f'Built {out / ("reference" + suffix)} and {out / ("probe" + suffix)}')
+    probes = {'probe': spec['probe'], **spec.get('probes', {})}
+    for name, probe in probes.items():
+        compile_(args.cxx, [here / probe['source']], [Path(args.sdk) / 'sdk' / 'include', ROOT / probe['machine']],
+                 host, out / (name + suffix), True)
+    print(f'Built {out / ("reference" + suffix)} and ' + ', '.join(str(out / (n + suffix)) for n in probes))
 
 
 if __name__ == '__main__':

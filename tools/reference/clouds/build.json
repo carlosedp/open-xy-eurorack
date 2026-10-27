@@ -1,0 +1,20 @@
+{
+  "reference": {
+    "source": "reference.cpp",
+    "eurorack": ["clouds/dsp/granular_processor.cc", "clouds/dsp/correlator.cc", "clouds/dsp/mu_law.cc",
+                 "clouds/dsp/pvoc/frame_transformation.cc", "clouds/dsp/pvoc/phase_vocoder.cc",
+                 "clouds/dsp/pvoc/stft.cc", "clouds/resources.cc"],
+    "stmlib": ["dsp/units.cc", "dsp/atan.cc", "utils/random.cc"],
+    "defines": ["TEST"]
+  },
+  "probe": {
+    "source": "probe.cpp",
+    "machine": "machines/cumulus"
+  },
+  "probes": {
+    "cirrus": {
+      "source": "cirrus.cpp",
+      "machine": "machines/cirrus"
+    }
+  }
+}

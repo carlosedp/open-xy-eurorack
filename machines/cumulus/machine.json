@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "sdk": "1.2",
+  "kind": "effect",
+  "description": "After Clouds: the send recorded and played back as grains, scattered, pitched and frozen, through Clouds' diffuser and reverb.",
+  "identity": {
+    "effect": 11,
+    "page": 21
+  },
+  "dryParameter": "dry"
+}
