@@ -1,10 +1,11 @@
 #pragma once
-#include <opxy/draw.hpp>
+#include <opxy/page_header.hpp>
 
 namespace chimes {
 // Matches resources.display in definition.json: paths, points, nodes, texts, palette.
-// Twelve chimes hang from a rail, three to each of four outlines (paths 0 to 3).
-using Frame = opxy::draw::Frame<4, 39, 4, 0, 3>;
+// Twelve chimes hang from a rail, three to each of four outlines (paths 0 to 3);
+// nodes 4 to 11 and every text slot are the SDK's two-page header.
+using Frame = opxy::draw::Frame<4, 39, 12, 16, 3>;
 const unsigned kTubes = 12;
 struct DisplayState {
     opxy::i32 swing[kTubes];  // each chime's swing, tenths of a degree, Q10
@@ -14,5 +15,6 @@ struct DisplayState {
     opxy::u32 initialized;
     opxy::i32 structure;      // the Structure the outlines were drawn for
     opxy::u32 key;            // the outlines' geometry key
+    opxy::draw::PageHeader header;
 };
 }

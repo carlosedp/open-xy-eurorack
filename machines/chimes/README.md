@@ -17,7 +17,10 @@ itself plays chords with, and the OP-XY supplies the polyphony.
 | **chord** | The sympathetic strings tuned to one of Rings' eleven intervals, chosen by Structure |
 
 Four encoders: **Struct**, **Bright**, **Damping** and **Position**, with
-Rings' meanings. Pressing the first switches it to **Model** and back.
+Rings' meanings, and a second page with **Model** under Struct. As on Macro
+Osc, the header shows both pages, the one the encoders edit large and bright:
+pressing any encoder switches pages. Bright, Damping and Position repeat on
+the second page.
 
 - **Struct** stretches the partials (modal), tunes the sympathetic string (sympathetic), sets dispersion (string), or picks the interval (chord).
 - **Bright** opens the exciter and the strings' damping filters.
@@ -42,7 +45,7 @@ modal partial:
 - **Position** sets how far a note swings each chime: the weight the sound gives its partial.
 - **Damping** sets how long the chimes swing.
 - **Bright** dims the shortest chimes.
-- The first encoder's header names the model, or the interval in the chord model.
+- The header names the model, and in the chord model Struct's interval.
 
 Presets: Bell, Handpan (nearly harmonic modal partials, slightly stretched
 toward metal, with a long ring), Marimba, Glocken (stiff, bright bars, as a

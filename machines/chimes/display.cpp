@@ -11,7 +11,7 @@
 namespace chimes {
 namespace draw = opxy::draw;
 
-const i32 kRail = 40;       // the rail's height on screen, pixels
+const i32 kRail = 48;       // the rail's height on screen, pixels, below the two-row header
 const i32 kCord = 6;        // each chime hangs this far below the rail
 const i32 kLongest = 114;   // the fundamental's chime, pixels
 const i32 kShortest = 12;
@@ -73,6 +73,7 @@ inline void display_reset(DisplayState& state) {
     state.serial = state.track = state.initialized = 0;
     state.structure = -1;
     state.key = 1;
+    state.header.reset();
 }
 
 inline void display(DisplayState& state, const draw::Input& input, Frame& frame) {
@@ -82,18 +83,16 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
     const u32 model = (static_cast<u32>(control(input.slots[4])) >> 16) * kModels >> 15;
     const u32 chord = ((static_cast<u32>(structure) >> 8) * 10 + (1u << 22)) >> 23;
 
-    // Values read 0..99, as on the stock engines; the first encoder names the
-    // model, or in the chord model the chord.
-    for (u32 p = 0; p < opxy::page_controls; ++p) {
-        char value[3];
-        caption(value, input.parameters[p]);
-        draw::header(frame, p, value);
-    }
-    if (input.shown[0] == 4) {
-        draw::header(frame, 0, kModelNames[model]);
-    } else if (model == kChord) {
-        draw::header(frame, 0, kChordNames[chord]);
-    }
+    // The SDK's two-page header: the four controls on top, Model under Struct
+    // with the other three repeated. Values read 0..99, as on the stock
+    // engines; Model reads its name, and Struct in the chord model its chord.
+    const char* const titles[8] = {"Struct", "Bright", "Damping", "Position", "Model", "", "", ""};
+    char values[8][draw::header_capacity] = {};
+    for (u32 p = 0; p < opxy::page_controls; ++p) caption(values[p], input.slots[p]);
+    draw::copy(values[4], draw::header_capacity, kModelNames[model]);
+    if (model == kChord) draw::copy(values[0], draw::header_capacity, kChordNames[chord]);
+    const opxy::u8 pages[2][4] = {{0, 1, 2, 3}, {4, 1, 2, 3}};
+    draw::page_header(state.header, input, frame, titles, values, kTubes / 3, pages);
 
     // A note swings each chime by its partial's Position weight, adding to its swing.
     const i32 elapsed = clamp(input.elapsed, 0, 205);  // at most 0.2 s per frame

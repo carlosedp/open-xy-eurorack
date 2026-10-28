@@ -2,6 +2,7 @@
   "schema": 1,
   "id": "chimes",
   "name": "Chimes",
+  "press": "page",
   "parameters": [
     {"id": "structure", "label": "Struct", "default": 0.6060606060606061, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
     {"id": "brightness", "label": "Bright", "default": 0.6565656565656566, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
@@ -22,6 +23,6 @@
   "resources": {
     "voiceBytes": 480, "voiceAlignment": 4, "voiceCapacity": 64, "sharedBytes": 208996,
     "outputPeakQ31": 1073741824,
-    "display": {"stateBytes": 116, "stateAlignment": 4, "paths": 4, "points": 39, "nodes": 4, "texts": 0, "palette": 3}
+    "display": {"stateBytes": 136, "stateAlignment": 4, "paths": 4, "points": 39, "nodes": 12, "texts": 16, "palette": 3}
   }
 }
