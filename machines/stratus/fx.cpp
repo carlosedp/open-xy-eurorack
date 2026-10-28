@@ -1,4 +1,4 @@
-// Cumulus: Clouds' granular mode, in fixed point, as an OP-XY send effect.
+// Stratus: Clouds' granular mode, in fixed point, as an OP-XY send effect.
 // The send is Clouds' input; the return is its output, all wet, while the
 // stock mixer keeps each track's dry sound. Clouds itself lives in the send's
 // buffer (core.h).
@@ -6,7 +6,7 @@
 #include "clouds.h"
 #include <cstring>
 
-namespace cumulus {
+namespace stratus {
 // Bytes of the buffer cleared per block before the first sound: 16 KiB, about
 // 21 blocks (30 ms) for all of it.
 const u32 kClearing = 16384;
@@ -84,4 +84,4 @@ void process(State& state, opxy::Buffer buffer, opxy::Channel left, opxy::Channe
         right[i] = balance(right[i]);
     }
 }
-}  // namespace cumulus
+}  // namespace stratus

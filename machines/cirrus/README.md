@@ -10,7 +10,7 @@ the sample at Speed. The [licence](vendor/LICENSE) and
 
 It is Clouds' granular player at its 16-bit quality: in stereo for a stereo
 sample, in mono for a mono one. Clouds' feedback, diffuser and reverb belong to
-an effect: send the track to [Cumulus](../cumulus) for them.
+an effect: send the track to [Stratus](../stratus) for them.
 
 Four controls, and three more on Shift:
 
@@ -79,11 +79,11 @@ the same tone at Speed 99, so that both read grains of the tone as it flows
 
 Deliberate differences:
 
-- **A sample in place of the recording.** The grains read the sample and nothing records: no Freeze, which Speed 50 replaces, and no feedback, diffuser or reverb, which need a recording or a long memory for every note (Cumulus has them).
+- **A sample in place of the recording.** The grains read the sample and nothing records: no Freeze, which Speed 50 replaces, and no feedback, diffuser or reverb, which need a recording or a long memory for every note (Stratus has them).
 - **Speed.** Clouds' grains follow its recording head as it moves on with the input. Cirrus' follow a scan through the sample, at Speed; at 99 it moves as the head does. Position measures forward from the scan, where Clouds' measures back from the head.
 - **Up to 6 grains a note**, the first 2 at high quality. Clouds plays up to 32 in stereo and 40 in mono, at high quality while fewer than a quarter play. Density aims for 32 overlap³ grains in stereo and 40 in mono, which passes 6 below 20 and above 79 (22 and 77 in mono): there Cirrus is less dense than Clouds, and quieter.
 - **A note's own grain**, as Clouds' trigger input seeds one.
-- **Pitch's notches on whole values**, the stepped envelope and per-block modulation, as in Cumulus.
+- **Pitch's notches on whole values**, the stepped envelope and per-block modulation, as in Stratus.
 - **Grains read at most 32 times the sample's speed**, five octaves up; a grain is shortened to fit the trim at its speed.
 - **Not ported.** Dry/wet, the trigger and freeze inputs, the diffuser and reverb (a send's), and Clouds' other modes.
 

@@ -1,10 +1,10 @@
-# Generates the tables.h of the machines after Clouds, Cirrus and Cumulus, from
+# Generates the tables.h of the machines after Clouds, Cirrus and Stratus, from
 # the formulas in upstream Clouds' clouds/resources/lookup_tables.py, quantized
 # to the fixed-point formats they use and rescaled from Clouds' 32 kHz to the
 # OP-XY's 44.1 kHz. The two differ only in their namespace. From the
 # repository root:
 #   python tools/clouds_tables.py machines/cirrus/tables.h
-#   python tools/clouds_tables.py machines/cumulus/tables.h
+#   python tools/clouds_tables.py machines/stratus/tables.h
 import sys
 from pathlib import Path
 import numpy

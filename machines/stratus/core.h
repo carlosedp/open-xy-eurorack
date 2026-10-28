@@ -2,11 +2,11 @@
 #include <opxy/effect.hpp>
 #include "fixed.h"
 
-// Cumulus is one Clouds in granular mode on a send, in its 16-bit stereo
+// Stratus is one Clouds in granular mode on a send, in its 16-bit stereo
 // setting: the send records into Clouds' buffer and grains play it back, then
 // Clouds' diffuser, feedback and reverb, with Clouds' 32 grains at once.
 // Everything but the clearing count lives in the send's buffer (Clouds, below).
-namespace cumulus {
+namespace stratus {
 // Clouds' recording in its 16-bit stereo mode, 32696 samples at 32 kHz
 // (1.02 s), at 44.1 kHz.
 const i32 kBuffer = 45056;
@@ -26,7 +26,7 @@ const u32 kReverb = 22589;     // the reverb's ten lines (clouds.h)
 enum Knob : u32 { kPosition, kSize, kDensity, kTexture, kPitch, kFeedback, kReverbAmount, kFreeze, kKnobs };
 // The controls definition.json declares: Clouds' four main ones, then on a
 // press of the same encoders Freeze, Texture, Dry and Reverb. Dry is the stock
-// mixer's (machine.json dryParameter): Cumulus never reads it.
+// mixer's (machine.json dryParameter): Stratus never reads it.
 enum Control : u32 {
     kControlPosition, kControlSize, kControlPitch, kControlDensity,
     kControlFreeze, kControlTexture, kControlDry, kControlReverb
@@ -106,4 +106,4 @@ void process(State& state, opxy::Buffer buffer, opxy::Channel left, opxy::Channe
              opxy::Parameters parameters);
 // process at all of Clouds' knobs, kKnobs Q31 words in Knob order.
 void render(State& state, opxy::Buffer buffer, opxy::Channel left, opxy::Channel right, const i32* knobs);
-}  // namespace cumulus
+}  // namespace stratus

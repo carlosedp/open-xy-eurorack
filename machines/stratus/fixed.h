@@ -2,7 +2,7 @@
 #include <opxy/q31.hpp>
 #include "tables.h"
 
-// Fixed-point arithmetic for Cumulus. The Blackfin has no floating point and the
+// Fixed-point arithmetic for Stratus. The Blackfin has no floating point and the
 // firmware links no 64-bit or float helpers, so every Clouds formula is rebuilt
 // from 32-bit integer operations here.
 //
@@ -13,7 +13,7 @@
 //   gains        Q28 below 8
 //   controls     Q31, 0..1
 //   pitch        Q16 semitones or octaves; phase increments Q16 samples or Q32 cycles
-namespace cumulus {
+namespace stratus {
 using opxy::i32;
 using opxy::u32;
 using opxy::i16;
@@ -160,4 +160,4 @@ inline i32 sine(u32 phase) {
     const i32 y = p + mul31(mul31(p, absolute(p)) * 2 - p, 483183821);  // + 0.225 (p|p| - p)
     return y >= 0x40000000 ? kMaximum : y <= -0x40000000 ? -kMaximum : y * 2;
 }
-}  // namespace cumulus
+}  // namespace stratus

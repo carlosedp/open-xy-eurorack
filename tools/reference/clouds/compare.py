@@ -1,4 +1,4 @@
-# Cumulus against upstream Clouds. From the repository root, after
+# Stratus against upstream Clouds. From the repository root, after
 # tools/reference/upstream.py and tools/reference/build.py clouds:
 #   python tools/reference/clouds/compare.py level [--seeds 4] [--quick]
 #   python tools/reference/clouds/compare.py rate|pitch|delay|freeze|feedback|reverb [--seeds 4]
@@ -63,7 +63,7 @@ def level(args):
                 print(f'density {density:<4} size {size:<4} texture {texture:<4} | RMS {r:.4f} {c:.4f} '
                       f'({c / max(r, 1e-9):5.2f}x)')
     ratios.sort()
-    print(f'Cumulus / Clouds RMS median {ratios[len(ratios) // 2]:.2f}, range {ratios[0]:.2f}..{ratios[-1]:.2f}')
+    print(f'Stratus / Clouds RMS median {ratios[len(ratios) // 2]:.2f}, range {ratios[0]:.2f}..{ratios[-1]:.2f}')
 
 
 def onset_interval(x, rate):
@@ -115,7 +115,7 @@ def pitch(args):
         # Long grains at regular intervals, barely overlapping: each a clean tone burst.
         r, c = (grain_cents(render(h, tone(440), WARM + 1.6, 0.2, 0.85, 0.3, 0.6, pitch=knob), h.rate, expected)
                 for h, knob in zip(sides(), (clouds, cirrus)))
-        print(f'pitch {semitones:+3d} st | {expected:7.1f} Hz: Clouds {r:+5.1f} cents, Cumulus {c:+5.1f} cents')
+        print(f'pitch {semitones:+3d} st | {expected:7.1f} Hz: Clouds {r:+5.1f} cents, Stratus {c:+5.1f} cents')
 
 
 def delay(args):
@@ -131,7 +131,7 @@ def delay(args):
 
     for position in (0.0, 0.25, 0.5, 0.75):
         r, c = both(burst, burst_at + 1.2, (position, 0.15, 0.95, 0.5), analysis.seeds(args.seeds), centre)
-        print(f'position {position:<4} | heard {r * 1000:6.1f} ms after the burst, Cumulus {c * 1000:6.1f} ms')
+        print(f'position {position:<4} | heard {r * 1000:6.1f} ms after the burst, Stratus {c * 1000:6.1f} ms')
 
 
 def freeze(args):

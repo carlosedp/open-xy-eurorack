@@ -9,7 +9,7 @@
   },
   "probe": {
     "source": "probe.cpp",
-    "machine": "machines/cumulus"
+    "machine": "machines/stratus"
   },
   "probes": {
     "cirrus": {

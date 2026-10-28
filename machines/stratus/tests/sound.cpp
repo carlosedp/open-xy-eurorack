@@ -1,4 +1,4 @@
-// Cumulus' sound checks, compiled for the host and run by
+// Stratus' sound checks, compiled for the host and run by
 // python sdk.py test --machine <folder>. Each check prints FAIL and the
 // measurement when it does not hold.
 #include "../fx.cpp"
@@ -29,16 +29,16 @@ struct Settings {
 };
 const Settings kDefault = {of99(20), of99(50), of99(80), of99(50), of99(50), 0.0, 0.0, 0.25};
 
-cumulus::State state;
-i32 memory[cumulus::kBufferBytes / 4];
-const opxy::Buffer kBuffer = {memory, cumulus::kBufferBytes / 4};
+stratus::State state;
+i32 memory[stratus::kBufferBytes / 4];
+const opxy::Buffer kBuffer = {memory, stratus::kBufferBytes / 4};
 
 // Places the effect on a send: initialize, then the blocks that clear its buffer.
 void place() {
-    cumulus::initialize(state);
+    stratus::initialize(state);
     const i32 parameters[8] = {};
     i32 l[opxy::block_frames], r[opxy::block_frames];
-    while (state.cleared < sizeof(cumulus::Clouds)) cumulus::process(state, kBuffer, l, r, parameters);
+    while (state.cleared < sizeof(stratus::Clouds)) stratus::process(state, kBuffer, l, r, parameters);
 }
 
 // Sends `seconds` of input through it at Clouds' eight knobs (render): left and
@@ -59,7 +59,7 @@ Output send(const Settings& s, double seconds, Left in_left, Right in_right, dou
             l[i] = q31(in_left(t));
             r[i] = q31(in_right(t));
         }
-        cumulus::render(state, kBuffer, l, r, parameters);
+        stratus::render(state, kBuffer, l, r, parameters);
         for (unsigned i = 0; i < opxy::block_frames; ++i) {
             out.left.push_back(l[i] / 2147483648.0);
             out.right.push_back(r[i] / 2147483648.0);
@@ -127,12 +127,12 @@ double grain_cents(const std::vector<double>& x, double hz, double from, double 
 int main() {
     // Outside a send the buffer is empty: silence, whatever comes in.
     {
-        cumulus::initialize(state);
+        stratus::initialize(state);
         const i32 parameters[8] = {};
         i32 l[opxy::block_frames], r[opxy::block_frames];
         for (unsigned i = 0; i < opxy::block_frames; ++i) l[i] = r[i] = 0x40000000;
         const opxy::Buffer none = {nullptr, 0};
-        cumulus::process(state, none, l, r, parameters);
+        stratus::process(state, none, l, r, parameters);
         bool quiet = true;
         for (unsigned i = 0; i < opxy::block_frames; ++i) quiet = quiet && !l[i] && !r[i];
         check(quiet, "silence outside a send", 0);
@@ -140,7 +140,7 @@ int main() {
 
     // The controls play Clouds' knobs: Position, Size, Pitch and Density, then on
     // the same encoders Freeze, Texture and Reverb. Dry is the stock mixer's:
-    // whatever it reads, Cumulus plays Clouds without feedback.
+    // whatever it reads, Stratus plays Clouds without feedback.
     {
         place();
         const Settings s = {of99(30), of99(60), of99(85), of99(30), of99(92), 0.0, of99(30), 0.75};
@@ -152,7 +152,7 @@ int main() {
         double difference = 0;
         for (size_t b = 0; b < knobs.left.size() / opxy::block_frames; ++b) {
             for (unsigned i = 0; i < opxy::block_frames; ++i) l[i] = r[i] = q31(tone(330)((b * opxy::block_frames + i) / kRate));
-            cumulus::process(state, kBuffer, l, r, controls);
+            stratus::process(state, kBuffer, l, r, controls);
             // process returns Clouds' wet 4 times louder, saturating (fx.cpp).
             for (unsigned i = 0; i < opxy::block_frames; ++i) {
                 const double expected = std::fmin(std::fmax(knobs.left[b * opxy::block_frames + i] * 4, -1.0), 1.0);
@@ -162,12 +162,12 @@ int main() {
         check(difference < 1e-8, "the controls play Clouds' knobs", difference);
     }
 
-    // The buffer holds whatever was there: Cumulus clears it before it sounds,
+    // The buffer holds whatever was there: Stratus clears it before it sounds,
     // and stays silent meanwhile.
     {
         u32 seed = 12345;
         for (i32& word : memory) word = static_cast<i32>(seed = seed * 1664525u + 1013904223u);
-        cumulus::initialize(state);
+        stratus::initialize(state);
         const Output clearing = send(kDefault, 0.025, tone(220), tone(220));
         check(peak(clearing.left) == 0 && peak(clearing.right) == 0, "silent while clearing", peak(clearing.left));
         const Output x = send(kDefault, 2.0, tone(220), tone(220));
@@ -266,7 +266,7 @@ int main() {
     {
         place();
         send(kDefault, 1.0, tone(220), tone(220));
-        cumulus::initialize(state);
+        stratus::initialize(state);
         const Output x = send(kDefault, 0.025, tone(220), tone(220));
         check(peak(x.left) == 0, "silent while clearing after a reset", peak(x.left));
     }
@@ -295,6 +295,6 @@ int main() {
         const Output x = send(kDefault, 2.0, tone(220), tone(220));
         std::printf("  a 220 Hz send at half scale returns peak %.3f, RMS %.3f\n", peak(x.left, 1.0), rms(x.left, 1.0, 2.0));
     }
-    if (!failures) std::puts("PASS cumulus sound checks");
+    if (!failures) std::puts("PASS stratus sound checks");
     return failures ? 1 : 0;
 }

@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "id": "cumulus",
-  "name": "Cumulus",
+  "id": "stratus",
+  "name": "Stratus",
   "parameters": [
     {"id": "position", "label": "Position", "default": 0.20202020202020202, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},
     {"id": "size", "label": "Size", "default": 0.5050505050505051, "mapping": {"kind": "linear", "minimum": 0, "maximum": 1}, "display": "percent"},

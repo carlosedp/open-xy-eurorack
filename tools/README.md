@@ -8,7 +8,7 @@ Nothing here is built into firmware. Downloads and builds go to the ignored
 | Tool | Does |
 | --- | --- |
 | [chimes_tables.py](chimes_tables.py), [chimes_panel.py](chimes_panel.py) | Generate Chimes' `tables.h` and `panel.svg.fragment`; CI checks they are current |
-| [clouds_tables.py](clouds_tables.py) | Generates the `tables.h` of the machines after Clouds, Cumulus and Cirrus; CI checks they are current |
+| [clouds_tables.py](clouds_tables.py) | Generates the `tables.h` of the machines after Clouds, Stratus and Cirrus; CI checks they are current |
 | [reference/](reference) | Builds the upstream float code and the machine on the host, and compares them |
 | [blackfin_loops.py](blackfin_loops.py) | Counts the Blackfin instructions in a machine's loops (synth, effect or sample engine), from the pinned compiler |
 | [host/sdk_cxx14.py](host/sdk_cxx14.py) | `sdk.py test` with C++14 host compiles, for clang++ on Windows |
@@ -21,8 +21,8 @@ python tools/reference/build.py rings        # local/reference/rings/reference a
 python tools/reference/rings/compare.py grid
 python tools/reference/rings/compare.py tuning
 python tools/reference/rings/compare.py envelope 2 110 0.25 0.3 0.4 0.3
-python tools/reference/build.py clouds       # Clouds against Cumulus and Cirrus
-python tools/reference/clouds/compare.py all # Cumulus
+python tools/reference/build.py clouds       # Clouds against Stratus and Cirrus
+python tools/reference/clouds/compare.py all # Stratus
 python tools/reference/clouds/cirrus.py all  # Cirrus
 ```
 

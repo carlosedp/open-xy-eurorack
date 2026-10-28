@@ -41,7 +41,7 @@ jobs:
           diff -u machines/machines/chimes/tables.h "$RUNNER_TEMP/tables.h"
           python machines/tools/chimes_panel.py "$RUNNER_TEMP/panel.svg.fragment"
           diff -u machines/machines/chimes/panel.svg.fragment "$RUNNER_TEMP/panel.svg.fragment"
-          for machine in cumulus cirrus; do
+          for machine in stratus cirrus; do
             mkdir -p "$RUNNER_TEMP/$machine"
             python machines/tools/clouds_tables.py "$RUNNER_TEMP/$machine/tables.h"
             diff -u "machines/machines/$machine/tables.h" "$RUNNER_TEMP/$machine/tables.h"

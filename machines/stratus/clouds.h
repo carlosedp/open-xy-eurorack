@@ -7,7 +7,7 @@
 // (AudioBuffer::WriteFade), played back as grains (GranularSamplePlayer::Play,
 // Grain::OverlapAdd), diffused (Diffuser) and sent through the reverb
 // (Reverb). Time constants are Clouds' at 32 kHz, rescaled to 44.1 kHz.
-namespace cumulus {
+namespace stratus {
 const i32 kPerBlockUp = 1743553487;     // SLOPE(num_grains_, ..., 0.9, 0.2) per 1 ms block, per 0.73 ms: Q31
 const i32 kPerBlockDown = 321025712;
 const i32 kGainSmoothing = 15604117;    // ONE_POLE(gain_normalization_, ..., 0.01) per sample, Q31
@@ -562,4 +562,4 @@ inline void process_block(Clouds& k, const Controls& c, i32* l, i32* r) {
         r[t] = soft_limit(mul31(out_r[t], wet));
     }
 }
-}  // namespace cumulus
+}  // namespace stratus
