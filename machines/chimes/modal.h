@@ -106,6 +106,10 @@ inline void tune_modes(Voice& voice, u32 frequency, i32 structure, i32 brightnes
             voice.rg[count] = c.rg;
             voice.hg[count] = c.hg;
             voice.g2[count] = 2 * c.g;
+            // Its amplitude falls by sqrt(1 - 2 r hg) a sample: by at least
+            // 64 r hg / ln 2 octaves a block, rounded down.
+            const i32 r_used = c.rg - c.g;  // r as the filter has it, Q28
+            voice.decay[count] = mul31(mul31(r_used * 8, c.hg), 1549082005);  // 64 / ln 2 / 128, Q31
         }
         stretch = static_cast<u32>(static_cast<i32>(stretch) + stiffness);
         // Partials do not fold back into negative frequencies; a few extra
@@ -117,7 +121,7 @@ inline void tune_modes(Voice& voice, u32 frequency, i32 structure, i32 brightnes
         q = multiply_shift(q, static_cast<u32>(loss), 31);
     }
     // A new partial starts from rest.
-    for (unsigned i = voice.count; i < count; ++i) voice.modes[i].s1 = voice.modes[i].s2 = 0;
+    for (unsigned i = voice.count; i < count; ++i) voice.modes[i].s1 = voice.modes[i].s2 = voice.life[i] = 0;
     voice.count = count;
 }
 
@@ -201,10 +205,26 @@ inline void render_modal(Voice& voice, u32 frequency, i32 structure, i32 brightn
     }
 
     // Position weights change once per block; Rings interpolates them per sample.
+    // Once struck, a partial rests at zero until the next strike when it rings
+    // below -120 dB (kRest), or when Rings' float partial would have decayed
+    // past kLife: in fixed point a partial can settle into a faint endless
+    // oscillation, a limit cycle of its rounding, which Rings' never does. A
+    // note so costs less as its partials fade.
     if (excited) {
-        for (unsigned i = 0; i < voice.count; ++i) render_partial<true>(voice, i, targets, input, out);
+        for (unsigned i = 0; i < voice.count; ++i) {
+            voice.life[i] = kLife;
+            render_partial<true>(voice, i, targets, input, out);
+        }
     } else {
-        for (unsigned i = 0; i < voice.count; ++i) render_partial<false>(voice, i, targets, input, out);
+        for (unsigned i = 0; i < voice.count; ++i) {
+            Svf& mode = voice.modes[i];
+            voice.life[i] -= voice.decay[i];
+            if (voice.life[i] <= 0 || (absolute(mode.s1) < kRest && absolute(mode.s2) < kRest)) {
+                mode.s1 = mode.s2 = voice.life[i] = 0;
+                continue;
+            }
+            render_partial<false>(voice, i, targets, input, out);
+        }
     }
 }
 }  // namespace chimes

@@ -17,6 +17,8 @@ using opxy::i32;
 using opxy::u32;
 
 const i32 kUnit = 1 << 26;               // 1.0 in Q26 audio
+const i32 kRest = 64;                    // -120 dB of kUnit: below it a partial rests
+const i32 kLife = 24 << 24;              // 24 octaves (-144 dB) a partial rings at most, Q24
 const i32 kOne28 = 1 << 28;              // 1.0 in Q28
 const i32 kMaximum = opxy::q31::maximum; // just below 1.0 in Q31
 

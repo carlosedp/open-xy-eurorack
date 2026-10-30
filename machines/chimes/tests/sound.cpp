@@ -227,6 +227,19 @@ int main() {
         check(same, "a glide's partials catch up within four blocks", glided.count);
     }
 
+    // Rung down below -120 dB, the modal resonator's partials rest: a note ends
+    // in exact silence, and a second strike sounds as the first did.
+    for (double damping : {0.0, 0.3}) {
+        const Settings s = {chimes::kModal, 0.4, 0.6, damping, 0.3};
+        const std::vector<double> first = play(1, s, 440, 8);
+        const std::vector<double> tail(first.end() - 4410, first.end());
+        check(peak(tail) == 0, "a note rings down to exact silence", peak(tail));
+        const std::vector<double> again = play(1, s, 440, 0.5, true, false);
+        double difference = 0;
+        for (size_t i = 0; i < again.size(); ++i) difference = std::fmax(difference, std::fabs(again[i] - first[i]));
+        check(difference < 1e-6, "and a second strike sounds as the first", difference);
+    }
+
     // The levels, for setting the output scale against the core machines.
     for (unsigned m = 0; m < chimes::kModels; ++m) {
         const Settings s = {m, 0.4, 0.6, 0.6, 0.3};

@@ -55,6 +55,9 @@ struct Voice {
     // Modal: each partial's integrators and coefficients.
     Svf modes[kModes];
     i32 rg[kModes], hg[kModes], g2[kModes];
+    // How far Rings' float partial would have decayed since the strike ended:
+    // octaves left before it falls below kLife (life), and per block (decay), Q24.
+    i32 life[kModes], decay[kModes];
     u32 count;    // partials below 0.49 of the sample rate
     u32 key[4];   // the frequency and controls the coefficients were computed for
     u32 pending;  // blocks left retuning a quarter of the partials to key[0]

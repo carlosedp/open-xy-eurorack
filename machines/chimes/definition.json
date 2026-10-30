@@ -21,7 +21,7 @@
     "Chord": {"structure": 0.40404040404040403, "brightness": 0.5555555555555556, "damping": 0.7070707070707071, "position": 0.30303030303030304, "model": 0.875}
   },
   "resources": {
-    "voiceBytes": 480, "voiceAlignment": 4, "voiceCapacity": 64, "sharedBytes": 208996,
+    "voiceBytes": 576, "voiceAlignment": 4, "voiceCapacity": 64, "sharedBytes": 208996,
     "outputPeakQ31": 1073741824,
     "display": {"stateBytes": 136, "stateAlignment": 4, "paths": 4, "points": 39, "nodes": 12, "texts": 16, "palette": 3}
   }

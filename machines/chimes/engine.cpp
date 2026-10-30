@@ -95,6 +95,15 @@ inline void render(Voice& voice, Shared& shared, u32 owner, opxy::Output output,
     // follows it every 8 samples. Each stage is a pass over the block, which
     // leaves the Blackfin's registers enough for it.
     DcBlocker coupling = voice.coupling;
+    if (!coupling.x && !coupling.y && !block_peak(out)) {
+        // Silence, with the coupling settled: the output is silence, and only
+        // the limiter's envelope moves, falling as it does on silence.
+        i32 peak = voice.peak;
+        for (unsigned i = 0; i < opxy::block_frames; ++i) peak += mul31(-peak, kRelease);
+        voice.peak = peak;
+        for (unsigned i = 0; i < opxy::block_frames; ++i) output[i] = 0;
+        return;
+    }
     for (unsigned i = 0; i < opxy::block_frames; ++i) out[i] = coupling.process<11>(out[i]);
     voice.coupling = coupling;
     const i32 gain = kModelGain[model];

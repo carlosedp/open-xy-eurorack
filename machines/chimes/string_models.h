@@ -109,34 +109,56 @@ inline void add_pickup(const i32* line, u32 w, u32 comb, i32* out) {
 // Rings reads the loop with Hermite interpolation each sample; with the delay
 // fixed for the block, an all-pass tunes it with one multiply and a flat
 // magnitude response, as Karplus does.
+//
+// Done in one loop, the steps need more values than the Blackfin has
+// registers, and the loop reloads them from the stack every sample. So each
+// step is a pass of its own: the read and all-pass, the stiffness line, the
+// input and FIR, the IIR, then the writes. A pass may only read what earlier
+// passes wrote, so the block goes in chunks no longer than the loop's (and the
+// stiffness line's) delay, which the line always holds already. The output is
+// the same as one loop's, sample for sample.
 template <bool stiff>
-inline void run_string(String& s, const StringBlock& b, u32 delay, i32* line, i32* stretch,
-                       u32 stiffness, i32 ap_gain, u32 w, const i32* in, i32* out) {
-    const u32 whole = (delay >> 16) - 1;  // at least 1
+__attribute__((noinline)) void run_string(String& s, const StringBlock& b, u32 delay, i32* __restrict line,
+                                          i32* __restrict stretch, u32 stiffness, i32 ap_gain, u32 w,
+                                          const i32* __restrict in, i32* __restrict out) {
+    const u32 whole = (delay >> 16) - 1;  // at least 3
     const i32 coefficient = allpass_coefficient(delay - (whole << 16));
-    const i32 fir0 = b.fir0, fir1 = b.fir1;
+    u32 chunk = whole < opxy::block_frames ? whole : opxy::block_frames;
+    if (stiff && stiffness < chunk) chunk = stiffness;
     i32 ap_in = s.ap_in, ap_out = s.ap_out, x1 = s.x1, x2 = s.x2;
     Svf filter = s.iir;
-    u32 read = w - whole;
-    for (unsigned i = 0; i < opxy::block_frames; ++i, ++w) {
-        const i32 x = line[read++ & kLineMask];
-        i32 sample = ap_in + mul31(coefficient, x - ap_out);
-        ap_in = x;
-        ap_out = sample;
+    i32 samples[opxy::block_frames];
+    for (u32 start = 0; start < opxy::block_frames; start += chunk) {
+        const u32 n = opxy::block_frames - start < chunk ? opxy::block_frames - start : chunk;
+        i32* __restrict sample = samples + start;
+        u32 read = w - whole;
+        for (u32 i = 0; i < n; ++i) {
+            const i32 x = line[read++ & kLineMask];
+            const i32 y = ap_in + mul31(coefficient, x - ap_out);
+            ap_in = x;
+            ap_out = y;
+            sample[i] = y;
+        }
         if (stiff) {
             // stmlib's Allpass over the stiffness line.
-            const i32 back = stretch[(w - stiffness) & kStretchMask];
-            const i32 written = sample + mul31(back, ap_gain);
-            stretch[w & kStretchMask] = written;
-            sample = back - mul31(written, ap_gain);
+            u32 at = w;
+            for (u32 i = 0; i < n; ++i, ++at) {
+                const i32 back = stretch[(at - stiffness) & kStretchMask];
+                const i32 written = sample[i] + mul31(back, ap_gain);
+                stretch[at & kStretchMask] = written;
+                sample[i] = back - mul31(written, ap_gain);
+            }
         }
-        sample += in[i];
-        const i32 fir = mul31(fir0, x1) + mul31(fir1, sample + x2);
-        x2 = x1;
-        x1 = sample;
-        const i32 lp = low_pass(filter, b.iir, fir);
-        out[i] = lp;
-        line[w & kLineMask] = lp;
+        const i32 fir0 = b.fir0, fir1 = b.fir1;
+        for (u32 i = 0; i < n; ++i) {
+            const i32 x = sample[i] + in[start + i];
+            sample[i] = mul31(fir0, x1) + mul31(fir1, x + x2);
+            x2 = x1;
+            x1 = x;
+        }
+        const Coefficients c = b.iir;
+        for (u32 i = 0; i < n; ++i) out[start + i] = low_pass(filter, c, sample[i]);
+        for (u32 i = 0; i < n; ++i, ++w) line[w & kLineMask] = out[start + i];
     }
     s.ap_in = ap_in;
     s.ap_out = ap_out;
@@ -145,6 +167,15 @@ inline void run_string(String& s, const StringBlock& b, u32 delay, i32* line, i3
     s.iir = filter;
 }
 
+// The largest magnitude in a block.
+inline i32 block_peak(const i32* x) {
+    i32 peak = 0;
+    for (unsigned i = 0; i < opxy::block_frames; ++i) {
+        const i32 a = absolute(x[i]);
+        if (a > peak) peak = a;
+    }
+    return peak;
+}
 // One plain string for one block, adding the string to out and its pickup to
 // aux (Q26).
 inline void render_string(String& s, i32* line, u32 w, const StringControls& k,
@@ -161,8 +192,9 @@ inline void render_string(String& s, i32* line, u32 w, const StringControls& k,
 // splits between the loop and the stiffness all-pass. Toward either end it
 // moves every sample, with noise above or the curved bridge below; there the
 // loop is read with linear interpolation, where Rings uses Hermite.
-inline void render_dispersed_string(String& s, i32* line, i32* stretch, u32 w, const StringControls& k,
-                                    const Dispersion& d, u32& seed, const i32* in, i32* out, i32* aux) {
+__attribute__((noinline)) void render_dispersed_string(String& s, i32* __restrict line, i32* __restrict stretch,
+                                                       u32 w, const StringControls& k, const Dispersion& d, u32& seed,
+                                                       const i32* __restrict in, i32* out, i32* aux) {
     const StringBlock b = prepare_string(s, k);
     i32 string[opxy::block_frames];
     if (!d.noise_amount && !d.curving) {
@@ -240,8 +272,8 @@ inline void trigger_pluck(Voice& voice, u32 frequency, i32 cutoff, i32 position)
 // Plucker::Process, then the exciter's DC blocker: the strings' input, Q26.
 // Once its echoes have died away only the DC blocker runs, returning the
 // burst's offset as it settles (the string would otherwise keep it), and then
-// it rests, and the input is silence.
-inline void render_pluck(Voice& voice, i32* comb, u32 w, i32* out) {
+// it rests, and the input is silence. Out of line, for its own registers.
+__attribute__((noinline)) void render_pluck(Voice& voice, i32* __restrict comb, u32 w, i32* __restrict out) {
     if (!voice.pluck_remaining) {
         if (!voice.pluck_ringing) {
             DcBlocker& blocker = voice.blocker;
