@@ -89,6 +89,7 @@ Deliberate differences:
 - **No V/OCT.** The keys give the note, and Rings' FREQUENCY knob (the tonic of the sympathetic tunings) is the note itself, as on Rings with nothing patched to V/OCT.
 - **Not ported.** Rings' FM voice, the stereo string-and-reverb model, the external audio input, its note filter, and its upsampler for strings below 21.5 Hz, where Chimes plays its lowest string instead.
 - **Rate of change.** Position's partial weights and the pickup's position change once per 64-sample block.
+- **Partials end in silence.** In fixed point a partial can settle into a limit cycle of its rounding: a faint endless oscillation, near -85 dBFS on a held note at Damping 0.7, which Rings' float partials never have. Each partial tracks how far Rings' would have decayed since the strike and rests at zero once that passes 144 dB, or once it rings below -120 dB, until the next strike. Against the build before this, over 3,024 settings, the output differs by at most -105.7 dBFS.
 
 ## Native notes
 
@@ -101,16 +102,23 @@ comb (17,408 bytes) from a pool of 12. When the pool is full the oldest lease
 is stolen and that voice falls silent until struck again. The modal model
 needs no lease.
 
-Measured on an OP-XY with the SDK's hardware benchmark (`opxy-synth-c8-v1`:
-note 60, the four main controls at their middle, the modal model), as a share
-of the 580,352-cycle block, median of three runs:
+Measured on an OP-XY with the SDK's control sweep (`opxy-synth-c8-sweep-v1`:
+note 60 held for 1.45 s, then released, each control through its range with
+the others at their defaults), a whole voice with stock's filter and envelope,
+as a share of the 580,352-cycle block, median of three runs:
 
-| Part | Share of the block |
+| Setting | Share of the block |
 | --- | --- |
-| A whole voice, with stock's filter and envelope | About 4.5% |
-| Each of the 12 partials | About 0.19% |
-| The output's AC coupling and limiter | About 0.64% |
-| Stock's filter and envelope alone | About 0.80% |
+| Model sympathetic, the heaviest | 6.0% |
+| Model chord | 5.9% |
+| Model string | 4.8% |
+| Model modal | 4.4% |
+| The four main controls at their middle | 4.9% |
+
+The sympathetic and chord models run two strings. From the midpoint-only
+benchmark (`opxy-synth-c8-v1`), on an earlier SDK: each of the 12 partials
+costs about 0.19%, the output's AC coupling and limiter about 0.64%, and
+stock's filter and envelope about 0.80%.
 
 The partials run in a loop of their own, which the compiler makes a Blackfin
 hardware loop; inlined into the loop over partials it branches each sample.
@@ -118,8 +126,11 @@ The coupling, the limiter's gain and the soft limit are three passes over the
 block, each within the Blackfin's registers. Rings retunes its partials every
 block; here a control's move retunes them all, and a note's move retunes a
 quarter of them a block, in turn, which catches up within four blocks. The
-strike's filter is set up only while it rings. None of this changes the
-output. Fewer partials save about 0.19% each, at an audible cost: Chimes keeps
+strike's filter is set up only while it rings. A string's loop runs as five
+passes over the block (read and all-pass, stiffness line, FIR, IIR, writes),
+in chunks no longer than the loop's delay, each within the Blackfin's
+registers. None of this changes the output. Partials that have rested cost
+nothing until the next strike. Fewer partials save about 0.19% each, at an audible cost: Chimes keeps
 Rings' twelve.
 
 `sdk.py test`'s host-timed estimate reads several times higher: on the host,
