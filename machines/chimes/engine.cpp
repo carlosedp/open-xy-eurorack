@@ -4,7 +4,7 @@
 // envelope and level follow, so the voice's own ringing is the note.
 #include "core.h"
 #include "modal.h"
-#include "strings.h"
+#include "string_models.h"
 #include <cstring>
 
 namespace chimes {

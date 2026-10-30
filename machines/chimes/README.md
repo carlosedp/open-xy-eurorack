@@ -62,7 +62,7 @@ python ../open-xy/tools/serve_harness.py --preview ../previews/chimes-001
 | [definition.json](definition.json), [machine.json](machine.json) | Controls, presets, resources, SDK version and identity |
 | [core.h](core.h), [engine.cpp](engine.cpp) | Voice and shared state, lifecycle, the voice's output and limiter |
 | [modal.h](modal.h) | The modal resonator and its strike |
-| [strings.h](strings.h) | The strings, their plucker, sympathetic tunings and chords |
+| [string_models.h](string_models.h) | The strings, their plucker, sympathetic tunings and chords |
 | [fixed.h](fixed.h), [tables.h](tables.h) | Fixed-point arithmetic and Rings' lookup tables |
 | [display.h](display.h), [display.cpp](display.cpp), [panel.svg.fragment](panel.svg.fragment) | The screen |
 | [tests/sound.cpp](tests/sound.cpp) | Sound checks: silence before a note, the declared peak, no DC, fading, tuning within 5 cents from 41 Hz to 2 kHz, Damping and Brightness, lease stealing and model changes |
