@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "sdk": "1.9",
+  "sdk": "1.10",
   "kind": "sample",
   "base": "sampler",
   "description": "After Clouds: each note plays its sample as grains, scattered, pitched and spread, scanning through it at Speed.",

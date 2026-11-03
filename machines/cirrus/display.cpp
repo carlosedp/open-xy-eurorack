@@ -12,8 +12,8 @@
 namespace cirrus {
 namespace draw = opxy::draw;
 
-const u32 kWave = 0, kFirstHeader = 4, kScan = 12, kFirstGrain = 13, kMessage = 16;
-const i32 kLeft = 40, kWidth = 400, kMiddle = 125, kHalfHeight = 25;  // the waveform, pixels
+const u32 kWave = 0, kFirstHeader = 4, kScan = 12, kFirstGrain = 13, kStart = 29, kEnd = 30, kMessage = 16;
+const i32 kLeft = 40, kWidth = 400, kMiddle = 130, kHalfHeight = 40;  // the waveform, pixels
 const u32 kBinsPerPath = 24;                                           // and one shared with the next
 enum Shade : u32 { kDim, kMid, kBright };
 
@@ -23,6 +23,31 @@ inline void caption(char* out, i32 value) {
     const u32 n = ((static_cast<u32>(control(value)) >> 16) * 99 + 16383) / 32767;
     if (n >= 10) *out++ = static_cast<char>('0' + n / 10);
     *out++ = static_cast<char>('0' + n % 10);
+    *out = 0;
+}
+
+// A frame's place in the sample as 0..99, as the stock engines show a control.
+inline void place_caption(char* out, u32 frame, u32 frames) {
+    const unsigned t = top_bit(frames);
+    const u32 fraction = multiply_shift(frame < frames ? frame : frames, reciprocal(frames, 31 + t), t);  // Q31
+    caption(out, static_cast<i32>(fraction > 0x7fffffffu ? 0x7fffffffu : fraction));
+}
+
+// The region's gain in whole dB against unity (Q27): log2 from its top bit and
+// the bits below read linearly, within half a dB, times 6.02.
+inline void gain_caption(char* out, u32 level) {
+    if (!level) {
+        draw::copy(out, draw::header_capacity, "off");
+        return;
+    }
+    const unsigned t = top_bit(level);
+    const u32 below = t >= 16 ? (level >> (t - 16)) & 0xffffu : (level << (16 - t)) & 0xffffu;
+    const i32 octaves_q16 = (static_cast<i32>(t) - 27) * 65536 + static_cast<i32>(below);
+    const i32 db = (octaves_q16 * 6 + mul31(octaves_q16, 44238163) + 32768) >> 16;  // 6.0206 dB an octave
+    const u32 magnitude = static_cast<u32>(db < 0 ? -db : db);
+    if (db) *out++ = db < 0 ? '-' : '+';
+    if (magnitude >= 10) *out++ = static_cast<char>('0' + magnitude / 10 % 10);
+    *out++ = static_cast<char>('0' + magnitude % 10);
     *out = 0;
 }
 
@@ -76,10 +101,30 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
 
     // The header: Position, Size, Density and Texture, then Pitch, Speed and
     // Spread, with Texture again where an eighth control would be; all 0..99.
-    const char* const titles[8] = {"Position", "Size", "Density", "Texture", "Pitch", "Speed", "Spread", ""};
+    // The eighth slot carries that second Texture, so that while Shift is held
+    // the edited row alone can show the stock sampler's settings Shift edits:
+    // start, end, direction and gain.
+    const draw::SampleOverview& o = *opxy_sample_overview();
+    const char* titles[8] = {"Position", "Size", "Density", "Texture", "Pitch", "Speed", "Spread", "Texture"};
     char values[8][draw::header_capacity] = {};
     for (u32 i = 0; i < 7; ++i) caption(values[i], input.slots[i]);
-    const opxy::u8 pages[2][4] = {{0, 1, 2, 3}, {4, 5, 6, 3}};
+    caption(values[7], input.slots[3]);
+    const opxy::u8 pages[2][4] = {{0, 1, 2, 3}, {4, 5, 6, 7}};
+    if (input.shift) {
+        u32 page = 0;
+        for (u32 col = 0; col < opxy::page_controls; ++col)
+            if (input.shown[col] >= opxy::page_controls) page = 1;
+        const u32 first = page * opxy::page_controls;
+        titles[first] = "Start";
+        titles[first + 1] = "End";
+        titles[first + 2] = "Dir";
+        titles[first + 3] = "Gain";
+        const bool known = o.assigned && o.loaded && o.frames;
+        place_caption(values[first], known ? o.begin : 0, known ? o.frames : 1);
+        place_caption(values[first + 1], known ? o.end : 1, known ? o.frames : 1);
+        draw::copy(values[first + 2], draw::header_capacity, o.reverse ? "rev" : "fwd");
+        gain_caption(values[first + 3], o.level);
+    }
     draw::page_header(state.header, input, frame, titles, values, kFirstHeader, pages);
 
     if (!state.initialized || state.track != input.track) {
@@ -93,12 +138,13 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
     state.initialized = 1;
     state.track = input.track;
 
-    const draw::SampleOverview& o = *opxy_sample_overview();
     const bool ready = o.assigned && o.loaded && o.frames >= kShortest && o.end > o.begin;
     draw::text(frame, kMessage, 200 * unit, 128 * unit, unit, !o.assigned ? "load a sample" : !ready ? "loading" : "");
     if (!ready) {
         for (u32 p = 0; p < Frame::path_count; ++p) draw::hide(frame, kWave + p);
         draw::hide(frame, kScan);
+        draw::hide(frame, kStart);
+        draw::hide(frame, kEnd);
         for (u32 i = 0; i < kShownGrains; ++i) draw::hide(frame, kFirstGrain + i);
         state.generation = 0;
         return;
@@ -107,7 +153,7 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
         draw_wave(state, o, frame);
         state.generation = o.generation;
     }
-    for (u32 p = 0; p < Frame::path_count; ++p) draw::place(frame, kWave + p, centre_of(p), kMiddle * unit, unit, kMid, draw::stroke);
+    for (u32 p = 0; p < Frame::path_count; ++p) draw::place(frame, kWave + p, centre_of(p), kMiddle * unit, unit, kDim, draw::stroke);
 
     // The controls as the voices read them, and the trim the grains stay in.
     const Controls c = controls_of(input.slots);
@@ -119,9 +165,11 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
     state.serial = input.note_serial;
 
     // A note plays from Position again; the scan moves on at Speed, a share of
-    // the sample's own rate, and wraps within the trim.
+    // the sample's own rate, turned around when the region plays reversed, and
+    // wraps within the trim.
     if (struck) state.scan = 0;
-    const i32 per_second = mul31(clamp(c.speed, -65535, 65535) << 15, static_cast<i32>(rate));  // frames
+    const i32 speed = clamp(o.reverse ? -c.speed : c.speed, -65535, 65535);
+    const i32 per_second = mul31(speed << 15, static_cast<i32>(rate));  // frames
     state.scan += per_second * dt / 4;  // Q8 frames: x 256 / 1024
     const i32 span = static_cast<i32>(region << 8);  // Q8 frames
     state.scan %= span;
@@ -167,8 +215,9 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
             draw::hide(frame, kFirstGrain + i);
             continue;
         }
-        // It swells and fades over its life, from a quarter of its 4-pixel
-        // radius to all of it: the artwork's circle is the largest.
+        // It swells and fades over its life, from a quarter of its 8-pixel
+        // radius to all of it: the artwork's circle is the largest. The
+        // grains are the screen's foreground, over a dim waveform.
         const i32 rest = g.life - g.age, nearest = g.age < rest ? g.age : rest;
         const i32 radius = unit / 4 + 3 * unit / 2 * nearest / g.life;
         draw::place(frame, kFirstGrain + i, x_of(o.begin + (g.frame >> 8), o.frames), g.y, radius, kBright,
@@ -177,5 +226,8 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
     if (held) draw::place(frame, kScan, x_of(o.begin + (start >> 8), o.frames), kMiddle * unit, unit, kMid,
                           draw::fill_and_stroke);
     else draw::hide(frame, kScan);
+    // The trim's ends, which Shift's first two encoders move.
+    draw::place(frame, kStart, x_of(o.begin, o.frames), kMiddle * unit, unit, kBright, draw::fill_and_stroke);
+    draw::place(frame, kEnd, x_of(o.end - 1, o.frames), kMiddle * unit, unit, kBright, draw::fill_and_stroke);
 }
 }  // namespace cirrus

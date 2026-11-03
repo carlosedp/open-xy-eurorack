@@ -25,6 +25,11 @@ encoder switches pages, and Texture is on both, at encoder 4:
 | **Speed** | (the recording) | Moves the grains through the sample: still at 50, forward at the sample's own speed at 99, backward at 1. A note starts again from Position |
 | **Spread** | BLEND (spread) | Pans each grain at random about the centre, by up to the whole field at 99 |
 
+Shift and the encoders edit the stock sampler's own settings for the track,
+as on its page: Shift + 1 the sample start, + 2 the sample end, + 3 the
+direction and + 4 the gain. Stock saves them with the track; while Shift is
+held the header shows them, and the waveform always marks the start and end.
+
 Positions are 99ths of the control's travel. Presets: Cloud, Stretch,
 Stutter, Octave Down, Frozen and Rewind.
 
@@ -35,7 +40,8 @@ shows where the scan starts the grains, Position into the trim and moving on
 at Speed from each note, and the grains appear there as Density schedules
 them, swell and fade over the life Size gives them, and read on at their
 Pitch. The screen runs apart from the audio, so these are the controls'
-grains, not the voices' own. Without a sample it asks for one.
+grains, not the voices' own. The grains are the screen's foreground, over a
+dim waveform. Without a sample it asks for one.
 
 ## Playing it
 
@@ -46,10 +52,11 @@ grains, not the voices' own. Without a sample it asks for one.
 - **A note starts a grain at once**, as Clouds' trigger input does, and plays
   from Position again. At Density 50 that grain is all a note plays.
 - **The sample's trim** bounds the grains: they start, and end, inside it.
-  Cirrus' screen takes over the sampler page's encoders, so the trim is the
-  whole sample when one is newly loaded, or what a preset or the stock sampler
-  left on the track. Its reverse setting is not used; Speed below 50 plays
-  through it backward. A trim shorter than 128 frames plays nothing.
+  Shift + encoders 1 and 2 set it. A trim shorter than 128 frames plays nothing.
+- **Direction.** Reversed, the scan runs the other way: Speed above 50 moves
+  the grains back through the sample, and below 50 forward. Each grain still
+  reads forward, as Clouds' do.
+- **Gain.** Shift + encoder 4 scales the output, as the stock sampler's gain.
 - **Level.** The pad's level scales the output. A sample at full scale plays
   at most at half the OP-XY's full scale, Clouds' own full scale.
 - **Each note scatters its grains its own way**, so the notes of a chord do

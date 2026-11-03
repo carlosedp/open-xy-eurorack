@@ -5,10 +5,10 @@
 namespace cirrus {
 // Matches resources.display in definition.json: paths, points, nodes, texts, palette.
 // Paths 0 to 3 are the sample's waveform; nodes 4 to 11 and text slots 0 to
-// 15 the SDK's two-page header; node 12 the scan and 13 on the grains; text
-// slot 16 asks for a sample.
+// 15 the SDK's two-page header; node 12 the scan, 13 to 28 the grains, 29 and
+// 30 the trim's start and end; text slot 16 asks for a sample.
 const unsigned kShownGrains = 16;
-using Frame = opxy::draw::Frame<4, 50, 13 + kShownGrains, 17, 3>;
+using Frame = opxy::draw::Frame<4, 50, 15 + kShownGrains, 17, 3>;
 
 // A grain as the screen shows it: an impression from the controls and the
 // notes, since the screen runs apart from the audio and never sees the voices.
