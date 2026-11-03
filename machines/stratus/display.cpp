@@ -85,7 +85,7 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
 
     // Clouds' controls from the page's words, as process reads them.
     i32 knobs[kKnobs];
-    knobs[kPosition] = input.slots[kControlPosition];
+    knobs[kPosition] = position_knob(input.slots[kControlPosition]);
     knobs[kSize] = input.slots[kControlSize];
     knobs[kPitch] = input.slots[kControlPitch];
     knobs[kDensity] = input.slots[kControlDensity];

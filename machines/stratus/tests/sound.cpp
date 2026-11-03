@@ -138,7 +138,8 @@ int main() {
         check(quiet, "silence outside a send", 0);
     }
 
-    // The controls play Clouds' knobs: Position, Size, Pitch and Density, then on
+    // The controls play Clouds' knobs: Position (turned the other way), Size,
+    // Pitch and Density, then on
     // the second page Feedback, Texture and Reverb, and the shift row's Freeze.
     // Dry is the stock mixer's: whatever it reads, Stratus plays Clouds.
     {
@@ -146,7 +147,7 @@ int main() {
         const Settings s = {of99(30), of99(60), of99(85), of99(30), of99(92), of99(40), of99(30), 0.75};
         const Output knobs = send(s, 1.5, tone(330), tone(330));
         place();
-        const i32 controls[12] = {q31(s.position), q31(s.size),    q31(s.pitch), q31(s.density),
+        const i32 controls[12] = {q31(1 - s.position), q31(s.size),    q31(s.pitch), q31(s.density),
                                   q31(s.feedback), q31(s.texture), q31(0.6),     q31(s.reverb),
                                   q31(s.freeze),   0,              0,            0};
         i32 l[opxy::block_frames], r[opxy::block_frames];

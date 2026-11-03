@@ -33,6 +33,11 @@ enum Control : u32 {
     kControlFeedback, kControlTexture, kControlDry, kControlReverb, kControlFreeze
 };
 
+// Clouds' Position knob from the control, which turns the other way: the
+// screen's record head is on the right, so a clockwise turn moves the grains
+// toward it, 99 the most recent and 0 a second back (README).
+inline i32 position_knob(i32 control) { return control <= 0 ? kMaximum : kMaximum - control; }
+
 // Clouds' Grain, its envelope rendered in steps as it plays.
 struct Grain {
     u32 active;

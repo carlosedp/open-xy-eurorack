@@ -18,7 +18,7 @@ encoder 1.
 
 | Encoder | Page 1 | Page 2 | Shift |
 | --- | --- | --- | --- |
-| 1 | **Position** (POSITION): how far back in the recording grains start, 0 the most recent, 99 a second ago | **Feedback** (FEEDBACK): the return fed back into the recording | **Freeze** (FREEZE): off, or on to stop recording, the grains playing what the buffer holds |
+| 1 | **Position** (POSITION): how far back in the recording grains start, 99 the most recent, 0 a second ago (Clouds' knob turned the other way, so a clockwise turn moves the grains toward the screen's record head) | **Feedback** (FEEDBACK): the return fed back into the recording | **Freeze** (FREEZE): off, or on to stop recording, the grains playing what the buffer holds |
 | 2 | **Size** (SIZE): each grain's length, 32 ms to 0.5 s | **Texture** (TEXTURE): the grain window, hard-edged at 0 to smooth at 75, then the diffuser blurs them toward 99 | |
 | 3 | **Pitch** (PITCH): transposes the grains, lingering at Clouds' notches: -24 at 0, -12 at 7, -7 at 13, 0 from 46 to 53, +7 at 86, +12 at 92, +24 at 99 | **Dry** (BLEND, dry/wet): how much each track's send turns down its dry sound; at 0 a track's send is its dry/wet, fully wet at 100%, and at 99 sends leave the dry as it is. The stock mixer's, through `dryParameter` | |
 | 4 | **Density** (DENSITY): grains at regular intervals up to 46, none from 47 to 52, at random from 53; more of them further from the middle | **Reverb** (BLEND, reverb): Clouds' reverb on the return | |
@@ -73,7 +73,7 @@ Against upstream Clouds, built on the host and fed the same tone or burst
 - **Level** through the grains matches within 4% at Density 30, 40, 80 and 90 over Size and Texture, and within 20% at 65, where a few random grains make any 1.5 s vary. Randomly seeded settings are averaged over several runs. Like Clouds, Stratus plays up to 32 grains at once, the first quarter of them at Clouds' high quality.
 - **Grain intervals** below Density's middle match within 2%.
 - **Pitch** inside the grains is within 2 cents at every notch.
-- **Position's delay** matches within 2 ms from 0 to 75.
+- **Position's delay** matches within 2 ms from 24 to 99 (Clouds' 75 to 0).
 - **Freeze** holds the same recording; **Feedback** and **Reverb** tails match within the spread of single bursts (about ±15%).
 
 Deliberate differences:

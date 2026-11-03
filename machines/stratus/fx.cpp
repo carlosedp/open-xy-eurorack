@@ -70,7 +70,7 @@ inline i32 balance(i32 x) {
 void process(State& state, opxy::Buffer buffer, opxy::Channel left, opxy::Channel right,
              opxy::Parameters parameters) {
     i32 knobs[kKnobs];
-    knobs[kPosition] = parameters[kControlPosition];
+    knobs[kPosition] = position_knob(parameters[kControlPosition]);
     knobs[kSize] = parameters[kControlSize];
     knobs[kPitch] = parameters[kControlPitch];
     knobs[kDensity] = parameters[kControlDensity];
