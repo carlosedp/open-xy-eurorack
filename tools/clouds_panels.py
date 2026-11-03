@@ -6,7 +6,9 @@
 import argparse
 from pathlib import Path
 
-PALETTE = ['#4A4A4A', '#9A9A9A', '#F0F0F0']  # dim, mid and bright
+PALETTE = ['#4A4A4A', '#9A9A9A', '#F0F0F0']  # Stratus: dim, mid and bright
+# Cirrus' shades, darkest to brightest: display.cpp's Shade.
+SHADES = ['#262626', '#3A3A3A', '#555555', '#7A7A7A', '#A6A6A6', '#D2D2D2', '#FFFFFF']
 PARKED = 'matrix(1 0 0 1 640 120)'           # off screen until a frame places it
 
 
@@ -17,14 +19,20 @@ def header(sdk, machine, first_node):
     return text.replace('@ID@', machine).rstrip('\n')
 
 
-def circles(machine, first, count, radius):
+def circles(machine, first, count, radius, colour):
     return [f'  <circle id="{machine}_node_{first + i}" transform="{PARKED}" cx="0" cy="0" r="{radius}" '
-            f'fill="{PALETTE[2]}" stroke="{PALETTE[2]}" stroke-width="0.5"/>' for i in range(count)]
+            f'fill="{colour}" stroke="{colour}" stroke-width="0.5"/>' for i in range(count)]
 
 
-def palette(machine):
+def bars(machine, first, count, half_width, half_height, colour):
+    return [f'  <path id="{machine}_node_{first + i}" transform="{PARKED}" '
+            f'd="M-{half_width} -{half_height} L{half_width} -{half_height} L{half_width} {half_height} L-{half_width} {half_height} Z" '
+            f'fill="{colour}" stroke="{colour}" stroke-width="0.5"/>' for i in range(count)]
+
+
+def palette(machine, colours):
     return [f'  <circle id="{machine}_palette_{i}" transform="{PARKED}" cx="0" cy="0" r="1" '
-            f'fill="{colour}" stroke="{colour}" stroke-width="1"/>' for i, colour in enumerate(PALETTE)]
+            f'fill="{colour}" stroke="{colour}" stroke-width="1"/>' for i, colour in enumerate(colours)]
 
 
 def stratus(sdk):
@@ -37,14 +45,16 @@ def stratus(sdk):
             '  <!-- Where Position starts the grains: a notch above the recording. -->',
             f'  <path id="stratus_node_9" transform="{PARKED}" d="M-5 -6 L5 -6 L0 0 Z" '
             f'fill="{PALETTE[1]}" stroke="{PALETTE[1]}" stroke-width="0.5"/>',
-            '  <!-- The grains. -->', *circles('stratus', 10, 24, 4),
-            '  <!-- Palette entries, parked off screen. -->', *palette('stratus'), '</g>']
+            '  <!-- The grains. -->', *circles('stratus', 10, 24, 4, PALETTE[2]),
+            '  <!-- Palette entries, parked off screen. -->', *palette('stratus', PALETTE), '</g>']
 
 
 def cirrus(sdk):
-    # display.cpp: nodes 0..3 the waveform's four outlines (paths), 4..11 the
-    # header, 12 and 31..33 the held notes' playheads, 13..28 the grains, 29 and
-    # 30 the trim's ends, 34 where the scans start; text slot 16 asks for a sample.
+    # display.cpp's nodes: 0..3 the waveform's four outlines (paths), 4..11 the
+    # header, then in drawing order 12..27 the waveform lit under each grain,
+    # 28 where the scans start, 29 and 30 the trim's ends, 31..34 the held
+    # notes' playheads, 35..66 two trail dots behind each grain, 67..82 the
+    # grains; text slot 16 asks for a sample.
     lines = ['<g id="cirrus_panel">', header(sdk, 'cirrus', 4),
              '  <!-- The sample, in four outlines of 25 of its 96 bins each (paths 0 to 3), at rest flat,',
              '       each about its own centre, as display.cpp draws them. -->']
@@ -54,21 +64,22 @@ def cirrus(sdk):
         bottom = [(x + 0.001, 1) for x, _ in reversed(top)]
         d = 'M' + ' L'.join(f'{x:.4f}'.rstrip('0').rstrip('.') + f' {y}' for x, y in top + bottom) + ' Z'
         lines.append(f'  <path id="cirrus_node_{p}" transform="matrix(1 0 0 1 {centre:.4f} 130)" d="{d}" '
-                     f'fill="none" stroke="{PALETTE[0]}" stroke-width="1"/>')
-    lines += ['  <!-- A playhead for each held note: where its scan starts the grains. -->',
-              *[f'  <path id="cirrus_node_{n}" transform="{PARKED}" d="M-0.5 -46 L0.5 -46 L0.5 46 L-0.5 46 Z" '
-                f'fill="{PALETTE[1]}" stroke="{PALETTE[1]}" stroke-width="0.5"/>' for n in (12, 31, 32, 33)],
-              '  <!-- Where every note\'s scan starts: the trim\'s start and Position. -->',
-              f'  <path id="cirrus_node_34" transform="{PARKED}" d="M-0.5 -46 L0.5 -46 L0.5 46 L-0.5 46 Z" '
-              f'fill="{PALETTE[0]}" stroke="{PALETTE[0]}" stroke-width="0.5"/>',
-              '  <!-- The grains. -->', *circles('cirrus', 13, 16, 8),
+                     f'fill="none" stroke="{SHADES[2]}" stroke-width="1"/>')
+    lines += ['  <!-- The waveform lit under each grain: a bar as tall as the sample, scaled down. -->',
+              *bars('cirrus', 12, 16, 1, 40, SHADES[3]),
+              "  <!-- Where every note's scan starts: the trim's start and Position. -->",
+              *bars('cirrus', 28, 1, 0.5, 46, SHADES[1]),
               "  <!-- The trim's start and end, which Shift's first two encoders move. -->",
-              *[f'  <path id="cirrus_node_{n}" transform="{PARKED}" d="M-0.75 -44 L0.75 -44 L0.75 44 L-0.75 44 Z" '
-                f'fill="{PALETTE[2]}" stroke="{PALETTE[2]}" stroke-width="0.5"/>' for n in (29, 30)],
+              *bars('cirrus', 29, 2, 0.75, 44, SHADES[5]),
+              '  <!-- A playhead for each held note: where its scan starts the grains. -->',
+              *bars('cirrus', 31, 4, 0.5, 46, SHADES[3]),
+              '  <!-- Two trail dots behind each grain, along what it has read. -->',
+              *circles('cirrus', 35, 32, 8, SHADES[2]),
+              '  <!-- The grains, over everything else. -->', *circles('cirrus', 67, 16, 8, SHADES[6]),
               '  <!-- Shown while the track has no sample. -->',
-              f'  <text id="cirrus_text_16" transform="matrix(1 0 0 1 200 128)" fill="{PALETTE[1]}" '
+              f'  <text id="cirrus_text_16" transform="matrix(1 0 0 1 200 128)" fill="{SHADES[4]}" '
               'font-family="UniversNextPro-Light" font-size="13px">-</text>',
-              '  <!-- Palette entries, parked off screen. -->', *palette('cirrus'), '</g>']
+              '  <!-- Palette entries, parked off screen. -->', *palette('cirrus', SHADES), '</g>']
     return lines
 
 

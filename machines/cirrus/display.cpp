@@ -3,20 +3,33 @@
 #include "granular.h"
 
 // Cirrus' own screen over the stock sampler's page: the SDK's two-page header
-// over the track's sample, its waveform from the sample's overview. While
-// notes are held, a line shows where the scan starts the grains, Position
-// into the trim and moving on at Speed from each note, and the grains appear
-// there as Density schedules them, live as long as Size makes them, reading
-// on at their Pitch. It is an impression from the controls and the notes:
-// display code never sees the voices.
+// over the track's sample, its waveform from the sample's overview. A dim line
+// marks where every note's scan starts, Position into the trim, and each held
+// note has a playhead that moves on from there at Speed and pulses as its note
+// starts. Its grains appear there as Density schedules them, glow and swell
+// with their window, which Texture shapes, sit higher or lower as Spread pans
+// them, and read on at their Pitch, back when the region plays reversed, with
+// a trail along what they have read and the waveform lit beneath them. It is
+// an impression from the controls and the notes: display code never sees the
+// voices.
 namespace cirrus {
 namespace draw = opxy::draw;
 
-const u32 kWave = 0, kFirstHeader = 4, kFirstGrain = 13, kStart = 29, kEnd = 30, kOrigin = 34, kMessage = 16;
-const u32 kHeads[kPlayheads] = {12, 31, 32, 33};  // a playhead for each held note
+// Nodes, in drawing order after the waveform and the header.
+const u32 kWave = 0, kFirstHeader = 4;
+const u32 kFirstLit = 12;                                // the waveform lit under each grain
+const u32 kOrigin = kFirstLit + kShownGrains;            // where every note's scan starts
+const u32 kStart = kOrigin + 1, kEnd = kStart + 1;       // the trim's ends
+const u32 kFirstHead = kEnd + 1;                         // a playhead for each held note
+const u32 kFirstTrail = kFirstHead + kPlayheads;         // kTrails behind each grain
+const u32 kFirstGrain = kFirstTrail + kShownGrains * kTrails;
+const u32 kMessage = 16;                                 // text slot: asks for a sample
+static_assert(kFirstGrain + kShownGrains == kNodes, "Cirrus' nodes");
 const i32 kLeft = 40, kWidth = 400, kMiddle = 130, kHalfHeight = 40;  // the waveform, pixels
 const u32 kBinsPerPath = 24;                                           // and one shared with the next
-enum Shade : u32 { kDim, kMid, kBright };
+const i32 kPulse = 256;                                                // a note's pulse, Q10 seconds
+// The palette, darkest to brightest (tools/clouds_panels.py).
+enum Shade : u32 { kFaint, kDim, kLow, kMid, kHigh, kBright, kWhite };
 
 // A control as the stock engines show one: its travel as 0..99, rounded, so
 // that n reads back exactly from n / 99.
@@ -58,6 +71,12 @@ inline i32 x_of(u32 frame, u32 frames) {
     const u32 fraction = multiply_shift(frame < frames ? frame : frames - 1, reciprocal(frames, 31 + t), t);  // Q31
     return (kLeft + mul31(static_cast<i32>(fraction), kWidth)) * draw::unit;
 }
+// The overview's bin a frame falls in.
+inline u32 bin_of(u32 frame, u32 frames) {
+    const unsigned t = top_bit(frames);
+    const u32 fraction = multiply_shift(frame < frames ? frame : frames - 1, reciprocal(frames, 31 + t), t);  // Q31
+    return static_cast<u32>(mul31(static_cast<i32>(fraction), static_cast<i32>(draw::overview_bins)));
+}
 
 inline void display_reset(DisplayState& state) {
     state.header.reset();
@@ -97,24 +116,25 @@ inline void draw_wave(DisplayState& state, const draw::SampleOverview& o, Frame&
     for (u32 p = 0; p < Frame::path_count; ++p) frame.paths[p].key = state.key;
 }
 
+// Everything but the header and the message, out of sight.
+inline void hide_body(Frame& frame) {
+    for (u32 n = kFirstLit; n < kNodes; ++n) draw::hide(frame, n);
+}
+
 inline void display(DisplayState& state, const draw::Input& input, Frame& frame) {
     const i32 unit = draw::unit;
 
-    // The header: Position, Size, Density and Texture, then Pitch, Speed and
-    // Spread, with Texture again where an eighth control would be; all 0..99.
-    // The eighth slot carries that second Texture, so that while Shift is held
-    // the edited row alone can show the stock sampler's settings Shift edits:
-    // start, end, direction and gain.
+    // The header: Position, Size, Density and Texture, then Pitch, Speed,
+    // Spread and Jitter; all 0..99. While Shift is held the edited row shows
+    // the stock sampler's settings Shift edits: start, end, direction, gain.
     const draw::SampleOverview& o = *opxy_sample_overview();
     // The trim as the voices play it: the whole sample while the region's
     // record gives no markers yet, as SampleBlock.region does then.
     const bool marked = o.end > o.begin && o.end <= o.frames;
     const u32 begin = marked ? o.begin : 0, end = marked ? o.end : o.frames;
-    const char* titles[8] = {"Position", "Size", "Density", "Texture", "Pitch", "Speed", "Spread", "Texture"};
+    const char* titles[8] = {"Position", "Size", "Density", "Texture", "Pitch", "Speed", "Spread", "Jitter"};
     char values[8][draw::header_capacity] = {};
-    for (u32 i = 0; i < 7; ++i) caption(values[i], input.slots[i]);
-    caption(values[7], input.slots[3]);
-    const opxy::u8 pages[2][4] = {{0, 1, 2, 3}, {4, 5, 6, 7}};
+    for (u32 i = 0; i < 8; ++i) caption(values[i], input.slots[i]);
     if (input.shift) {
         u32 page = 0;
         for (u32 col = 0; col < opxy::page_controls; ++col)
@@ -130,7 +150,7 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
         draw::copy(values[first + 2], draw::header_capacity, o.reverse ? "rev" : "fwd");
         gain_caption(values[first + 3], o.level);
     }
-    draw::page_header(state.header, input, frame, titles, values, kFirstHeader, pages);
+    draw::page_header(state.header, input, frame, titles, values, kFirstHeader);
 
     if (!state.initialized || state.track != input.track) {
         for (u32 i = 0; i < kShownGrains; ++i) state.grains[i].life = 0;
@@ -151,11 +171,7 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
         // and the message still show.
         if (!frame.paths[0].key) draw_wave(state, o, frame);
         for (u32 p = 0; p < Frame::path_count; ++p) draw::hide(frame, kWave + p);
-        for (u32 h = 0; h < kPlayheads; ++h) draw::hide(frame, kHeads[h]);
-        draw::hide(frame, kOrigin);
-        draw::hide(frame, kStart);
-        draw::hide(frame, kEnd);
-        for (u32 i = 0; i < kShownGrains; ++i) draw::hide(frame, kFirstGrain + i);
+        hide_body(frame);
         state.generation = 0;
         return;
     }
@@ -163,22 +179,23 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
         draw_wave(state, o, frame);
         state.generation = o.generation;
     }
-    for (u32 p = 0; p < Frame::path_count; ++p) draw::place(frame, kWave + p, centre_of(p), kMiddle * unit, unit, kDim, draw::stroke);
+    for (u32 p = 0; p < Frame::path_count; ++p)
+        draw::place(frame, kWave + p, centre_of(p), kMiddle * unit, unit, kLow, draw::stroke);
 
     // The controls as the voices read them, and the trim the grains stay in.
-    const Controls c = controls_of(input.slots);
+    Controls c = controls_of(input.slots);
+    c.reverse = o.reverse;
     const u32 rate = o.rate >= 8000 && o.rate <= 192000 ? o.rate : 44100;
     const u32 region = end - begin < kFrames ? end - begin : kFrames - 1;  // as the voices read it
     const i32 dt = input.reduced_motion ? 0 : draw::clamp(input.elapsed, 0, 102);
 
     // Each held note plays from Position again, its scan moving on at Speed, a
-    // share of the sample's own rate, turned around when the region plays
-    // reversed, and wrapping within the trim: a playhead for each, up to four,
-    // the newest replacing the oldest. As notes are released the oldest go.
-    const i32 speed = clamp(o.reverse ? -c.speed : c.speed, -65535, 65535);
-    const i32 per_second = mul31(speed << 15, static_cast<i32>(rate));  // frames
-    const i32 span = static_cast<i32>(region << 8);                    // Q8 frames
-    const u32 origin = multiply_shift(region << 8, static_cast<u32>(c.position) << 1, 32);  // Q8 frames
+    // share of the sample's own rate, and wrapping within the trim: a playhead
+    // for each, up to four, the newest replacing the oldest. As notes are
+    // released the oldest go.
+    const i32 per_second = mul31(clamp(c.speed, -65535, 65535) << 15, static_cast<i32>(rate));  // frames
+    const i32 span = static_cast<i32>(region << 8);                                              // Q8 frames
+    const u32 origin = multiply_shift(region << 8, static_cast<u32>(c.position) << 1, 32);        // Q8 frames
     u32 started = input.note_serial - state.serial;
     if (started > kPlayheads) started = kPlayheads;
     state.serial = input.note_serial;
@@ -197,6 +214,7 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
         head.scan = 0;
         head.wait = 0;  // a note seeds a grain at once
         head.seeded = 0;
+        head.age = 0;
     }
     u32 live = 0;
     for (u32 h = 0; h < kPlayheads; ++h) live += state.heads[h].active;
@@ -214,14 +232,20 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
     const i32 life = clamp(mul31(lookup(kGrainSize, c.size), 194783), 8, 1024);  // samples / 256 / 44100 x 1024
     const i32 overlap_grains = c.overlap > 0 ? 1 + mul31(c.overlap, static_cast<i32>(kMaxGrains) - 1) : 0;
     const i32 grains = overlap_grains < static_cast<i32>(kGrains) ? overlap_grains : static_cast<i32>(kGrains);
-    // A grain reads on at its Pitch against the sample's own rate, frames a second.
+    // A grain reads on at its Pitch against the sample's own rate, frames a
+    // second, back when the region plays reversed; Jitter spreads it, as each
+    // voice's grains are detuned.
     const u32 ratio = exp2(octaves(c.semitones), 16);  // Q16
     const i32 reading = static_cast<i32>(multiply_shift(ratio, rate, 16));
+    // Its window as the voices shape it (start_grain), for its glow.
+    const bool smooth = c.window_shape >= 1 << 30;
+    const i32 smoothness = smooth ? (c.window_shape - (1 << 30)) >> 15 : 0;
+    const i32 slope = smooth ? 0 : static_cast<i32>(reciprocal(static_cast<u32>(c.window_shape + 21474836), 40));
 
     for (u32 h = 0; h < kPlayheads; ++h) {
         Playhead& head = state.heads[h];
         if (!head.active) {
-            draw::hide(frame, kHeads[h]);
+            draw::hide(frame, kFirstHead + h);
             continue;
         }
         head.scan = (head.scan + per_second * dt / 4) % span;  // Q8 frames: x 256 / 1024
@@ -238,7 +262,9 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
             for (u32 i = 0; i < kShownGrains; ++i) {
                 ShownGrain& g = state.grains[i];
                 if (g.life) continue;
-                g.frame = start;
+                // A reversed grain starts at the far end of what it reads.
+                const u32 eaten = static_cast<u32>(reading / 4) * static_cast<u32>(life);  // Q8 frames
+                g.frame = g.origin = c.reverse ? (start + eaten < static_cast<u32>(span) ? start + eaten : start) : start;
                 // Up is left, down is right: Spread pans each grain at random about the centre.
                 g.y = kMiddle * unit + mul31(mul31(c.spread, noise_of(state.seed)), (kHalfHeight - 8) * unit);
                 g.age = 0;
@@ -246,28 +272,50 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
                 break;
             }
         }
-        draw::place(frame, kHeads[h], x_of(begin + (start >> 8), o.frames), kMiddle * unit, unit, kMid,
-                    draw::fill_and_stroke);
+        // A note's pulse: its playhead starts half again as large and bright,
+        // and settles over a quarter second.
+        const i32 pulse = head.age < kPulse ? kPulse - head.age : 0;
+        head.age += dt;
+        draw::place(frame, kFirstHead + h, x_of(begin + (start >> 8), o.frames), kMiddle * unit,
+                    unit + unit / 2 * pulse / kPulse, pulse ? kWhite : kMid, draw::fill_and_stroke);
     }
 
     for (u32 i = 0; i < kShownGrains; ++i) {
         ShownGrain& g = state.grains[i];
         if (g.life) {
             g.age += dt;
-            g.frame += static_cast<u32>(reading * dt / 4);
+            const u32 moved = static_cast<u32>(reading * dt / 4);
+            g.frame = c.reverse ? g.frame - moved : g.frame + moved;
             if (g.age >= g.life || g.frame >= static_cast<u32>(span)) g.life = 0;
         }
         if (!g.life) {
             draw::hide(frame, kFirstGrain + i);
+            draw::hide(frame, kFirstLit + i);
+            for (u32 k = 0; k < kTrails; ++k) draw::hide(frame, kFirstTrail + i * kTrails + k);
             continue;
         }
-        // It swells and fades over its life, from a quarter of its 8-pixel
-        // radius to all of it: the artwork's circle is the largest. The
-        // grains are the screen's foreground, over a dim waveform.
-        const i32 rest = g.life - g.age, nearest = g.age < rest ? g.age : rest;
-        const i32 radius = unit / 4 + 3 * unit / 2 * nearest / g.life;
-        draw::place(frame, kFirstGrain + i, x_of(begin + (g.frame >> 8), o.frames), g.y, radius, kBright,
-                    draw::fill_and_stroke);
+        // Its window's gain now, as the voices render it: its glow and its
+        // size, a quarter of its 8-pixel radius to all of it.
+        const u32 envelope = static_cast<u32>(g.age) * (0x80000000u / static_cast<u32>(g.life));
+        const i32 gain = smooth ? gain_at<true, true>(envelope, smoothness, slope)
+                                : gain_at<true, false>(envelope, smoothness, slope);  // Q15
+        const i32 x = x_of(begin + (g.frame >> 8), o.frames);
+        draw::place(frame, kFirstGrain + i, x, g.y, unit / 4 + 3 * unit / 4 * gain / 32768,
+                    kMid + static_cast<u32>(3 * gain / 32768), draw::fill_and_stroke);
+        // Its trail: dots back along what it has read, dimmer and smaller.
+        const i32 read = static_cast<i32>(g.frame - g.origin);
+        for (u32 k = 0; k < kTrails; ++k) {
+            const u32 behind = g.frame - static_cast<u32>(read / 3 * static_cast<i32>(k + 1));
+            draw::place(frame, kFirstTrail + i * kTrails + k, x_of(begin + (behind >> 8), o.frames), g.y,
+                        unit / 4 * static_cast<i32>(kTrails - k) / static_cast<i32>(kTrails) + unit / 8,
+                        k ? kDim : kLow, draw::fill_and_stroke);
+        }
+        // The waveform under it, lit as tall as the sample is there.
+        const u32 bin = bin_of(begin + (g.frame >> 8), o.frames);
+        const i32 top = -o.high[bin] * kHalfHeight / 32768, bottom = -o.low[bin] * kHalfHeight / 32768;  // pixels
+        const i32 half = (bottom - top) / 2 > 1 ? (bottom - top) / 2 : 1;
+        draw::place(frame, kFirstLit + i, x, (kMiddle + (top + bottom) / 2) * unit, half * unit / kHalfHeight,
+                    kDim + static_cast<u32>(3 * gain / 32768), draw::fill_and_stroke);
     }
     // Where every note's scan starts: the trim's start and Position, dim.
     draw::place(frame, kOrigin, x_of(begin + (origin >> 8), o.frames), kMiddle * unit, unit, kDim, draw::fill_and_stroke);

@@ -52,9 +52,10 @@ void render_sample(Voice& v, const opxy::SampleBlock& block) {
     Controls c = controls_of(block.parameters);
     c.semitones += clamp(block.region.pitch_cents, -9600, 9600) * 65536 / 100;
     const u32 rate = sample.rate >= 8000 && sample.rate <= 192000 ? sample.rate : 44100;
-    // The region's direction turns the scan around: reversed, Speed above 50
-    // moves the grains back through the sample, as the stock sampler plays it.
-    v.step = scan_step(block.region.reverse ? -c.speed : c.speed, rate, frames);
+    // The region's direction plays each grain backward; Speed alone sets the
+    // way the scan moves.
+    c.reverse = block.region.reverse;
+    v.step = scan_step(c.speed, rate, frames);
     // SoftConvert's limit, then the pad's level.
     const bool unity = block.region.level == opxy::sample_unity_level;
     const i32 level = static_cast<i32>(block.region.level < kLevelLimit ? block.region.level : kLevelLimit) * 2;  // Q28

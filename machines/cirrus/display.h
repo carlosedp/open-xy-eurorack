@@ -5,19 +5,22 @@
 namespace cirrus {
 // Matches resources.display in definition.json: paths, points, nodes, texts, palette.
 // Paths 0 to 3 are the sample's waveform; nodes 4 to 11 and text slots 0 to
-// 15 the SDK's two-page header; nodes 12 and 31 to 33 the held notes'
-// playheads, 13 to 28 the grains, 29 and 30 the trim's start and end, 34
-// where the scans start; text slot 16 asks for a sample.
-const unsigned kShownGrains = 16, kPlayheads = 4;
-using Frame = opxy::draw::Frame<4, 50, 19 + kShownGrains, 17, 3>;
+// 15 the SDK's two-page header; then, in drawing order, the lit waveform under
+// the grains, where the scans start, the trim's ends, the held notes'
+// playheads, the grains' trails and the grains (display.cpp); text slot 16
+// asks for a sample.
+const unsigned kShownGrains = 16, kPlayheads = 4, kTrails = 2;
+const unsigned kNodes = 12 + kShownGrains + 1 + 2 + kPlayheads + kShownGrains * kTrails + kShownGrains;
+using Frame = opxy::draw::Frame<4, 50, kNodes, 17, 7>;
 
 // A grain as the screen shows it: an impression from the controls and the
 // notes, since the screen runs apart from the audio and never sees the voices.
 struct ShownGrain {
-    opxy::u32 frame;  // where it reads in the region, Q8 frames
-    opxy::i32 y;      // Q10 pixels
-    opxy::i32 age;    // Q10 seconds; the grain is gone at life
-    opxy::i32 life;   // Q10 seconds, 0 when the slot is free
+    opxy::u32 frame;   // where it reads in the region, Q8 frames
+    opxy::u32 origin;  // where it started reading
+    opxy::i32 y;       // Q10 pixels
+    opxy::i32 age;     // Q10 seconds; the grain is gone at life
+    opxy::i32 life;    // Q10 seconds, 0 when the slot is free
 };
 // A held note's scan, as the screen follows it.
 struct Playhead {
@@ -26,6 +29,7 @@ struct Playhead {
     opxy::i32 scan;    // how far it has moved since its note, Q8 frames
     opxy::i32 wait;    // Q10 seconds until its next grain
     opxy::u32 seeded;  // its note's own grain has started
+    opxy::i32 age;     // Q10 seconds since its note, for the note's pulse
 };
 struct DisplayState {
     opxy::draw::PageHeader header;

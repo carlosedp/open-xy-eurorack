@@ -70,6 +70,8 @@ inline Controls controls_of(opxy::Parameters parameters) {
     c.semitones = pitch_of(parameters[kPitch]);
     c.speed = speed_of(parameters[kSpeed]);
     c.spread = control(parameters[kSpread]);
+    c.jitter = control(parameters[kJitter]);
+    c.reverse = 0;  // the region's, which sample.cpp sets
     return c;
 }
 
@@ -99,7 +101,7 @@ inline i32 hermite(const i16* s, i32 t) {
 
 // Grain::Start.
 inline void start_grain(Grain& g, u32 pre_delay, u32 first, i32 width, u32 increment, i32 window_shape,
-                        bool high, i32 gain_l, i32 gain_r) {
+                        bool high, i32 gain_l, i32 gain_r, bool reverse) {
     g.pre_delay = pre_delay;
     g.first = first;
     g.increment = increment;
@@ -115,6 +117,7 @@ inline void start_grain(Grain& g, u32 pre_delay, u32 first, i32 width, u32 incre
     }
     g.gain_l = gain_l;
     g.gain_r = gain_r;
+    g.reverse = reverse;
     g.high = high;
     g.active = 1;
 }
@@ -125,6 +128,12 @@ inline void start_grain(Grain& g, u32 pre_delay, u32 first, i32 width, u32 incre
 // room the grain leaves, and the scan moves it on from there.
 inline void schedule(Voice& v, Grain& g, const Controls& c, u32 pre_delay, u32 ratio, u32 begin, u32 frames,
                      bool high) {
+    // Jitter detunes each grain at random by up to a semitone. At 0 it draws
+    // no random number, so Cirrus plays as Clouds' grains do.
+    if (c.jitter) {
+        const u32 detuned = multiply_shift(ratio, exp2(octaves(mul31(mul31(c.jitter, noise_of(v.seed)), 65536)), 16), 16);
+        ratio = detuned < 1 ? 1 : detuned > kMaxRatio ? kMaxRatio : detuned;
+    }
     i32 size = lookup(kGrainSize, c.size);  // Q8 samples
     const u32 room = frames - kMargin;
     const u32 longest = multiply_shift(room, reciprocal(ratio, 40), 16);  // room 2^24 / ratio: Q8 samples
@@ -155,7 +164,10 @@ inline void schedule(Voice& v, Grain& g, const Controls& c, u32 pre_delay, u32 r
         gain_r = kMaximum;
         gain_l = (kMaximum - pan) * 2;
     }
-    start_grain(g, pre_delay, first, (size >> 8) & ~1, ratio, c.window_shape, high, gain_l, gain_r);
+    // A reversed grain starts at the far end of the same span and reads back
+    // to its start, a frame on so that its reads stay inside the room.
+    const u32 from = c.reverse ? first + (eaten >> 8) + 1 : first;
+    start_grain(g, pre_delay, from, (size >> 8) & ~1, ratio, c.window_shape, high, gain_l, gain_r, c.reverse != 0);
     v.size_hint += mul31(size - v.size_hint, kHintSmoothing);
 }
 
@@ -228,6 +240,19 @@ inline void overlap_add_mono(Grain& g, const i16* data, i32* out_l, i32* out_r) 
     u32 phase = g.phase;
     const u32 increment = g.increment;
     const i32 gain_l = g.gain_l, gain_r = g.gain_r;
+    if (g.reverse) {
+        // Back from first: the same reads at the negated position.
+        for (u32 t = 0; t < n; ++t) {
+            const i32 back = -static_cast<i32>(phase);
+            const i32 x = mul31(read<kHigh, 1>(s + (back >> 16), (back & 0xffff) << 15), gains[t]);
+            out_l[t] += mul31(x, gain_l);
+            out_r[t] += mul31(x, gain_r);
+            phase += increment;
+        }
+        g.first -= phase >> 16;
+        g.phase = phase & 0xffffu;
+        return;
+    }
     for (u32 t = 0; t < n; ++t) {
         const i32 x = mul31(read<kHigh, 1>(s + (phase >> 16), static_cast<i32>((phase & 0xffffu) << 15)), gains[t]);
         out_l[t] += mul31(x, gain_l);
@@ -253,6 +278,21 @@ inline void overlap_add_stereo(Grain& g, const i16* data, i32* out_l, i32* out_r
     const i32 kept = left_near ? g.gain_r : g.gain_l, crossed = kMaximum - kept;
     u32 phase = g.phase;
     const u32 increment = g.increment;
+    if (g.reverse) {
+        for (u32 t = 0; t < n; ++t) {
+            const i32 back = -static_cast<i32>(phase);
+            const i16* frame = s + (back >> 16) * 2;
+            const i32 fraction = (back & 0xffff) << 15;
+            const i32 a = mul31(read<kHigh, 2>(frame, fraction), gains[t]);
+            const i32 b = mul31(read<kHigh, 2>(frame + (left_near ? 1 : -1), fraction), gains[t]);
+            near[t] += a + mul31(b, crossed);
+            far[t] += mul31(b, kept);
+            phase += increment;
+        }
+        g.first -= phase >> 16;
+        g.phase = phase & 0xffffu;
+        return;
+    }
     for (u32 t = 0; t < n; ++t) {
         const i16* frame = s + (phase >> 16) * 2;
         const i32 fraction = static_cast<i32>((phase & 0xffffu) << 15);

@@ -27,6 +27,7 @@ double of99(int n) { return n / 99.0; }
 
 struct Settings {
     double position, size, density, texture, pitch, speed, spread;
+    double jitter;  // 0 where an initializer leaves it out
 };
 const Settings kDefault = {0, of99(50), of99(80), of99(50), of99(50), of99(75), of99(50)};
 // One grain, the note's own, at its longest: half a second, in which to
@@ -61,6 +62,7 @@ struct Note {
     i32 cents = 0;  // the pad's tuning
     u32 level = opxy::sample_unity_level;
     u32 begin = 0, end = 0xffffffffu;
+    bool reverse = false;  // the region's direction
 };
 
 struct Output {
@@ -74,7 +76,7 @@ Output play(const Sample& sample, const Settings& s, double seconds, const Note&
     if (!reuse) cirrus::initialize(voice, sample.view);
     cirrus::start(voice);
     const i32 parameters[8] = {q31(s.position), q31(s.size),  q31(s.density), q31(s.texture),
-                               q31(s.pitch),    q31(s.speed), q31(s.spread),  0};
+                               q31(s.pitch),    q31(s.speed), q31(s.spread),  q31(s.jitter)};
     u32 pitch[opxy::block_frames];
     for (u32& p : pitch) p = note.increment;
     i32 out[opxy::block_frames * 2];
@@ -83,7 +85,7 @@ Output play(const Sample& sample, const Settings& s, double seconds, const Note&
                                   parameters,
                                   pitch,
                                   opxy::Transport{1200, 0, false},
-                                  opxy::SampleRegion{note.begin, end, note.level, false, note.cents},
+                                  opxy::SampleRegion{note.begin, end, note.level, note.reverse, note.cents},
                                   nullptr,
                                   0,
                                   2,
@@ -298,6 +300,37 @@ int main() {
         const Output x = play(make(2.0, 44100, silence), kDefault, 1.0);
         check(peak(x.left) == 0 && peak(x.right) == 0, "a silent sample plays silence", peak(x.left));
     }
+    // The region reversed, each grain reads backward: one grain across the
+    // sample's change from 220 to 330 Hz at 1 s, starting 0.75 s in, plays
+    // 220 Hz first forward and 330 Hz first reversed.
+    {
+        const Sample change = make(2.0, 44100, halves);
+        Settings s = kSingle;
+        s.position = 0.5;  // 0.75 s of the 1.5 s a half-second grain leaves
+        const Output forward = play(change, s, 0.5);
+        Note back;
+        back.reverse = true;
+        const Output reversed = play(change, s, 0.5, back);
+        const double f = grain_cents(forward.left, 220, 0.03, 0.2), r = grain_cents(reversed.left, 330, 0.03, 0.2);
+        check(std::fabs(f) < 5, "a forward grain starts where it reads first", f);
+        check(std::fabs(r) < 5, "a reversed grain starts at its far end", r);
+        check(peak(reversed.left) <= 0.5, "a reversed grain within half scale", peak(reversed.left));
+    }
+
+    // Jitter detunes each grain at random, by up to a semitone; at 0 not at all.
+    {
+        Settings s = kSingle;
+        s.jitter = 1.0;
+        double low = 1e9, high = -1e9;
+        for (int note = 0; note < 8; ++note) {
+            const double cents = grain_cents(play(mono, s, 0.5).left, 220, 0.02, 0.5);
+            low = std::fmin(low, cents);
+            high = std::fmax(high, cents);
+        }
+        check(low > -103 && high < 103, "Jitter stays within a semitone", std::fmax(-low, high));
+        check(high - low > 20, "Jitter detunes the grains apart", high - low);
+    }
+
     if (!failures) std::puts("PASS cirrus sound checks");
     return failures ? 1 : 0;
 }

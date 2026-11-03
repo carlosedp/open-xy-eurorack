@@ -22,7 +22,7 @@ const u32 kFrames = 1u << 23;  // the longest sample read, 190 s at 44.1 kHz; fr
 const u32 kShortest = 128;     // a region shorter than this plays nothing: room for the shortest grain at kMaxRatio
 
 // The controls, in the order of definition.json: four, then four on Shift.
-enum Slot : u32 { kPosition, kSize, kDensity, kTexture, kPitch, kSpeed, kSpread };
+enum Slot : u32 { kPosition, kSize, kDensity, kTexture, kPitch, kSpeed, kSpread, kJitter };
 
 // Clouds' Grain, with its envelope rendered as it plays and its pan.
 struct Grain {
@@ -37,6 +37,7 @@ struct Grain {
     i32 smoothness;          // the window's share of the envelope, Q15
     i32 slope;               // the trapezoid's slope, Q10
     i32 gain_l, gain_r;      // the pan, Q31
+    u32 reverse;             // reads back from first: first is its far end
 };
 
 // The parameters one 32-sample block uses: Clouds' Parameters, already scaled.
@@ -49,6 +50,8 @@ struct Controls {
     i32 semitones;     // Pitch and the pad's tuning, Q16
     i32 speed;         // the scan, Q16 frames of the sample per output sample at its own rate
     i32 spread;        // Q31, 0..1
+    i32 jitter;        // Q31, 0..1: each grain's random detune, up to a semitone
+    u32 reverse;       // the region's direction: each grain reads backward
 };
 
 struct Voice {
