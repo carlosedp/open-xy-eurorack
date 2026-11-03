@@ -30,8 +30,8 @@ Shift and the encoders edit the stock sampler's own settings for the track,
 as on its page: Shift + 1 the sample start, + 2 the sample end, + 3 both
 together, moving the window between them through the sample, and + 4 the gain.
 Stock saves them with the track; while Shift is held the header shows the
-start, the end and the window's length (the gain it cannot read), and the
-waveform always marks the start and end.
+start, the end and the window's length (the gain, which it cannot read, as
+-), and the waveform always marks the start and end.
 
 Positions are 99ths of the control's travel. Presets: Cloud, Stretch,
 Stutter, Octave Down, Frozen and Rewind.
@@ -40,7 +40,9 @@ Cirrus draws its own screen over the stock sampler's page: the SDK's two-row
 header, the page the encoders edit large and bright and the other small and
 grey, over the track's sample as a dim waveform, covering the stock page beneath. A faint line marks where
 every note's scan starts, Position into the trim. Each held note, up to four,
-has a playhead that pulses as its note starts and moves on from there at Speed.
+has a playhead that pulses as its note starts and moves on from there at Speed;
+released, it rings on with its grains for three seconds, fading, as the amp
+envelope's release lets the sound ring (the screen cannot read the release).
 Its grains appear there as Density schedules them and are the screen's
 foreground: each glows and swells with its window, as Texture shapes it, sits
 higher or lower as Spread pans it, left above and right below, and reads on at

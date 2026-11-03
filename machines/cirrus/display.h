@@ -21,6 +21,7 @@ struct ShownGrain {
     opxy::i32 y;       // Q10 pixels
     opxy::i32 age;     // Q10 seconds; the grain is gone at life
     opxy::i32 life;    // Q10 seconds, 0 when the slot is free
+    opxy::i32 level;   // Q15: its playhead's, as a released note fades
 };
 // A held note's scan, as the screen follows it.
 struct Playhead {
@@ -30,6 +31,7 @@ struct Playhead {
     opxy::i32 wait;    // Q10 seconds until its next grain
     opxy::u32 seeded;  // its note's own grain has started
     opxy::i32 age;     // Q10 seconds since its note, for the note's pulse
+    opxy::i32 released;  // Q10 seconds since its note's release, or -1 while held
 };
 struct DisplayState {
     opxy::draw::PageHeader header;
