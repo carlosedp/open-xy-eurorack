@@ -105,6 +105,10 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
     // the edited row alone can show the stock sampler's settings Shift edits:
     // start, end, direction and gain.
     const draw::SampleOverview& o = *opxy_sample_overview();
+    // The trim as the voices play it: the whole sample while the region's
+    // record gives no markers yet, as SampleBlock.region does then.
+    const bool marked = o.end > o.begin && o.end <= o.frames;
+    const u32 begin = marked ? o.begin : 0, end = marked ? o.end : o.frames;
     const char* titles[8] = {"Position", "Size", "Density", "Texture", "Pitch", "Speed", "Spread", "Texture"};
     char values[8][draw::header_capacity] = {};
     for (u32 i = 0; i < 7; ++i) caption(values[i], input.slots[i]);
@@ -120,8 +124,8 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
         titles[first + 2] = "Dir";
         titles[first + 3] = "Gain";
         const bool known = o.assigned && o.loaded && o.frames;
-        place_caption(values[first], known ? o.begin : 0, known ? o.frames : 1);
-        place_caption(values[first + 1], known ? o.end : 1, known ? o.frames : 1);
+        place_caption(values[first], known ? begin : 0, known ? o.frames : 1);
+        place_caption(values[first + 1], known ? end : 1, known ? o.frames : 1);
         draw::copy(values[first + 2], draw::header_capacity, o.reverse ? "rev" : "fwd");
         gain_caption(values[first + 3], o.level);
     }
@@ -138,9 +142,13 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
     state.initialized = 1;
     state.track = input.track;
 
-    const bool ready = o.assigned && o.loaded && o.frames >= kShortest && o.end > o.begin;
+    const bool ready = o.assigned && o.loaded && o.frames >= kShortest && end > begin;
     draw::text(frame, kMessage, 200 * unit, 128 * unit, unit, !o.assigned ? "load a sample" : !ready ? "loading" : "");
     if (!ready) {
+        // A frame applies whole or not at all, and an outline needs a key: until
+        // the sample is ready the outlines are flat and hidden, so the header
+        // and the message still show.
+        if (!frame.paths[0].key) draw_wave(state, o, frame);
         for (u32 p = 0; p < Frame::path_count; ++p) draw::hide(frame, kWave + p);
         draw::hide(frame, kScan);
         draw::hide(frame, kStart);
@@ -158,7 +166,7 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
     // The controls as the voices read them, and the trim the grains stay in.
     const Controls c = controls_of(input.slots);
     const u32 rate = o.rate >= 8000 && o.rate <= 192000 ? o.rate : 44100;
-    const u32 region = o.end - o.begin < kFrames ? o.end - o.begin : kFrames - 1;  // as the voices read it
+    const u32 region = end - begin < kFrames ? end - begin : kFrames - 1;  // as the voices read it
     const i32 dt = input.reduced_motion ? 0 : draw::clamp(input.elapsed, 0, 102);
     const bool held = input.held_notes != draw::notes_unavailable && input.held_notes > 0;
     const bool struck = input.note_serial != state.serial;
@@ -220,14 +228,14 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
         // grains are the screen's foreground, over a dim waveform.
         const i32 rest = g.life - g.age, nearest = g.age < rest ? g.age : rest;
         const i32 radius = unit / 4 + 3 * unit / 2 * nearest / g.life;
-        draw::place(frame, kFirstGrain + i, x_of(o.begin + (g.frame >> 8), o.frames), g.y, radius, kBright,
+        draw::place(frame, kFirstGrain + i, x_of(begin + (g.frame >> 8), o.frames), g.y, radius, kBright,
                     draw::fill_and_stroke);
     }
-    if (held) draw::place(frame, kScan, x_of(o.begin + (start >> 8), o.frames), kMiddle * unit, unit, kMid,
+    if (held) draw::place(frame, kScan, x_of(begin + (start >> 8), o.frames), kMiddle * unit, unit, kMid,
                           draw::fill_and_stroke);
     else draw::hide(frame, kScan);
     // The trim's ends, which Shift's first two encoders move.
-    draw::place(frame, kStart, x_of(o.begin, o.frames), kMiddle * unit, unit, kBright, draw::fill_and_stroke);
-    draw::place(frame, kEnd, x_of(o.end - 1, o.frames), kMiddle * unit, unit, kBright, draw::fill_and_stroke);
+    draw::place(frame, kStart, x_of(begin, o.frames), kMiddle * unit, unit, kBright, draw::fill_and_stroke);
+    draw::place(frame, kEnd, x_of(end - 1, o.frames), kMiddle * unit, unit, kBright, draw::fill_and_stroke);
 }
 }  // namespace cirrus
