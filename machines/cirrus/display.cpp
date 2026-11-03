@@ -23,8 +23,9 @@ const u32 kStart = kOrigin + 1, kEnd = kStart + 1;       // the trim's ends
 const u32 kFirstHead = kEnd + 1;                         // a playhead for each held note
 const u32 kFirstTrail = kFirstHead + kPlayheads;         // kTrails behind each grain
 const u32 kFirstGrain = kFirstTrail + kShownGrains * kTrails;
+const u32 kFirstBar = kFirstGrain + kShownGrains;        // the waveform's bins, under its outline
 const u32 kMessage = 16;                                 // text slot: asks for a sample
-static_assert(kFirstGrain + kShownGrains == kNodes, "Cirrus' nodes");
+static_assert(kFirstBar + kBars == kNodes && kBars == draw::overview_bins, "Cirrus' nodes");
 const i32 kLeft = 40, kWidth = 400, kMiddle = 130, kHalfHeight = 60;  // the waveform, pixels
 const u32 kBinsPerPath = 24;                                           // and one shared with the next
 const i32 kPulse = 256;                                                // a note's pulse, Q10 seconds
@@ -166,6 +167,15 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
     }
     for (u32 p = 0; p < Frame::path_count; ++p)
         draw::place(frame, kWave + p, centre_of(p), kMiddle * unit, unit, kLow, draw::stroke);
+    // Each bin filled with a faint bar as tall as the sample is there, so the
+    // waveform reads as solid behind its outline; the grains stay in front.
+    for (u32 b = 0; b < kBars; ++b) {
+        const i32 top = -o.high[b] * kHalfHeight / 32768, bottom = -o.low[b] * kHalfHeight / 32768;  // pixels
+        const i32 half = (bottom - top) / 2 > 1 ? (bottom - top) / 2 : 1;
+        draw::place(frame, kFirstBar + b,
+                    kLeft * unit + static_cast<i32>(b) * kWidth * unit / static_cast<i32>(draw::overview_bins - 1),
+                    (kMiddle + (top + bottom) / 2) * unit, half * unit / kHalfHeight, kDim, draw::fill_and_stroke);
+    }
 
     // The controls as the voices read them, and the trim the grains stay in.
     Controls c = controls_of(input.slots);

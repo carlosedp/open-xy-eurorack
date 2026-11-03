@@ -20,5 +20,5 @@
     "Frozen": {"position": 0.30303030303030304, "size": 0.6060606060606061, "density": 0.9090909090909091, "texture": 0.7575757575757576, "pitch": 0.5050505050505051, "speed": 0.5050505050505051, "spread": 0.7070707070707071, "jitter": 0.0},
     "Rewind": {"position": 0.5050505050505051, "size": 0.40404040404040403, "density": 0.8080808080808081, "texture": 0.6060606060606061, "pitch": 0.5050505050505051, "speed": 0.25252525252525254, "spread": 0.40404040404040403, "jitter": 0.0}
   },
-  "resources": {"voiceCapacity": 256, "stereoOutput": 1, "shiftTrim": 1, "display": {"stateBytes": 464, "stateAlignment": 4, "paths": 4, "points": 50, "nodes": 83, "texts": 17, "palette": 7}}
+  "resources": {"voiceCapacity": 256, "stereoOutput": 1, "shiftTrim": 1, "display": {"stateBytes": 464, "stateAlignment": 4, "paths": 4, "points": 50, "nodes": 179, "texts": 17, "palette": 7}}
 }

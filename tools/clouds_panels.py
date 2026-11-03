@@ -54,10 +54,13 @@ def cirrus(sdk):
     # header, then in drawing order 12..27 the waveform lit under each grain,
     # 28 where the scans start, 29 and 30 the trim's ends, 31..34 the held
     # notes' playheads, 35..66 two trail dots behind each grain, 67..82 the
-    # grains; text slot 16 asks for a sample.
+    # grains, 83..178 a bar for each of the overview's 96 bins, drawn first;
+    # text slot 16 asks for a sample.
     lines = ['<g id="cirrus_panel">', header(sdk, 'cirrus', 4),
              "  <!-- Opaque below the header: the stock sampler's page and its waveform stay hidden. -->",
              '  <path d="M0,38 L480,38 L480,220 L0,220 Z" fill="#000000"/>',
+             "  <!-- A bar for each of the sample's bins, under its outline. -->",
+             *bars('cirrus', 83, 96, 1.2, 60, SHADES[0]),
              '  <!-- The sample, in four outlines of 25 of its 96 bins each (paths 0 to 3), at rest flat,',
              '       each about its own centre, as display.cpp draws them. -->']
     for p in range(4):

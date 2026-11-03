@@ -5,12 +5,12 @@
 namespace cirrus {
 // Matches resources.display in definition.json: paths, points, nodes, texts, palette.
 // Paths 0 to 3 are the sample's waveform; nodes 4 to 11 and text slots 0 to
-// 15 the SDK's two-page header; then, in drawing order, the lit waveform under
-// the grains, where the scans start, the trim's ends, the held notes'
-// playheads, the grains' trails and the grains (display.cpp); text slot 16
-// asks for a sample.
-const unsigned kShownGrains = 16, kPlayheads = 4, kTrails = 2;
-const unsigned kNodes = 12 + kShownGrains + 1 + 2 + kPlayheads + kShownGrains * kTrails + kShownGrains;
+// 15 the SDK's two-page header; then the lit waveform under the grains, where
+// the scans start, the trim's ends, the held notes' playheads, the grains'
+// trails, the grains, and a bar for each of the overview's bins, drawn under
+// the waveform's outline (display.cpp); text slot 16 asks for a sample.
+const unsigned kShownGrains = 16, kPlayheads = 4, kTrails = 2, kBars = 96;
+const unsigned kNodes = 12 + kShownGrains + 1 + 2 + kPlayheads + kShownGrains * kTrails + kShownGrains + kBars;
 using Frame = opxy::draw::Frame<4, 50, kNodes, 17, 7>;
 
 // A grain as the screen shows it: an impression from the controls and the
