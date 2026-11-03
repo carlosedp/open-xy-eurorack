@@ -29,9 +29,15 @@ static_assert(kFirstBar + kBars == kNodes && kBars == draw::overview_bins, "Cirr
 const i32 kLeft = 40, kWidth = 400, kMiddle = 130, kHalfHeight = 60;  // the waveform, pixels
 const u32 kBinsPerPath = 24;                                           // and one shared with the next
 const i32 kPulse = 256;                                                // a note's pulse, Q10 seconds
-// How long a released note's playhead and grains ring on, fading: the amp
-// envelope's release goes on sounding, which the screen cannot read.
-const i32 kTail = 3 * 1024;                                            // Q10 seconds
+// How long a released note's playhead and grains ring on, fading, while the
+// amp envelope's release goes on sounding: from its Release, along a curve
+// that rises 11 octaves from 5 ms (a guess at stock's own, which maps its
+// control positions to times), or 3 s when the envelope cannot be read.
+inline i32 tail_of(const draw::Input& input) {
+    if (!draw::envelope_known(input.amp)) return 3 * 1024;              // Q10 seconds
+    const u32 rising = exp2(mul31(input.amp.release, 11 << 16), 8);     // 2^(11 release), Q8
+    return clamp(static_cast<i32>(rising * 5 >> 8), 64, 12 * 1024);     // 5 ms x that, Q10 seconds
+}
 // The palette, darkest to brightest (tools/clouds_panels.py).
 enum Shade : u32 { kFaint, kDim, kLow, kMid, kHigh, kBright, kWhite };
 
@@ -190,11 +196,12 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
     // Each held note plays from Position again, its scan moving on at Speed, a
     // share of the sample's own rate, and wrapping within the trim: a playhead
     // for each, up to four. As notes are released the oldest let go and fade
-    // over kTail; a new note takes a free playhead, else the longest released,
-    // else the oldest.
+    // over the envelope's release; a new note takes a free playhead, else the
+    // longest released, else the oldest.
     const i32 per_second = mul31(clamp(c.speed, -65535, 65535) << 15, static_cast<i32>(rate));  // frames
     const i32 span = static_cast<i32>(region << 8);                                              // Q8 frames
     const u32 origin = multiply_shift(region << 8, static_cast<u32>(c.position) << 1, 32);        // Q8 frames
+    const i32 tail = tail_of(input);
     u32 started = input.note_serial - state.serial;
     if (started > kPlayheads) started = kPlayheads;
     state.serial = input.note_serial;
@@ -250,13 +257,13 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
         Playhead& head = state.heads[h];
         if (head.active && head.released >= 0) {
             head.released += dt;
-            if (head.released >= kTail) head.active = 0;
+            if (head.released >= tail) head.active = 0;
         }
         if (!head.active) {
             draw::hide(frame, kFirstHead + h);
             continue;
         }
-        const i32 level = head.released < 0 ? 32767 : (kTail - head.released) * 32 / (kTail / 1024);  // Q15
+        const i32 level = head.released < 0 ? 32767 : (tail - head.released) * 32767 / tail;  // Q15
         head.scan = (head.scan + per_second * dt / 4) % span;  // Q8 frames: x 256 / 1024
         if (head.scan < 0) head.scan += span;
         const u32 start = (origin + static_cast<u32>(head.scan)) % static_cast<u32>(span);
@@ -288,7 +295,8 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
         head.age += dt;
         draw::place(frame, kFirstHead + h, x_of(begin + (start >> 8), o.frames), kMiddle * unit,
                     unit + unit / 2 * pulse / kPulse,
-                    pulse ? kWhite : head.released < 0 ? kMid : level > 16384 ? kLow : kDim, draw::fill_and_stroke);
+                    pulse ? kWhite : head.released < 0 ? kBright : level > 21845 ? kMid : level > 10923 ? kLow : kDim,
+                    draw::fill_and_stroke);
     }
 
     for (u32 i = 0; i < kShownGrains; ++i) {

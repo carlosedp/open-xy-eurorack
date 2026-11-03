@@ -40,9 +40,10 @@ Cirrus draws its own screen over the stock sampler's page: the SDK's two-row
 header, the page the encoders edit large and bright and the other small and
 grey, over the track's sample as a dim waveform, covering the stock page beneath. A faint line marks where
 every note's scan starts, Position into the trim. Each held note, up to four,
-has a playhead that pulses as its note starts and moves on from there at Speed;
-released, it rings on with its grains for three seconds, fading, as the amp
-envelope's release lets the sound ring (the screen cannot read the release).
+has a bright playhead that pulses as its note starts and moves on from there
+at Speed; released, it rings on with its grains, dimmer and fading, for as long
+as the amp envelope's Release (on a curve guessed at stock's: 5 ms at 0, 2 s
+near 80, 10 s at 99), or three seconds where the envelope cannot be read.
 Its grains appear there as Density schedules them and are the screen's
 foreground: each glows and swells with its window, as Texture shapes it, sits
 higher or lower as Spread pans it, left above and right below, and reads on at
