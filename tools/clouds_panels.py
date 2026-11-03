@@ -43,8 +43,8 @@ def stratus(sdk):
 
 def cirrus(sdk):
     # display.cpp: nodes 0..3 the waveform's four outlines (paths), 4..11 the
-    # header, 12 the scan, 13..28 the grains, 29 and 30 the trim's ends; text
-    # slot 16 asks for a sample.
+    # header, 12 and 31..33 the held notes' playheads, 13..28 the grains, 29 and
+    # 30 the trim's ends, 34 where the scans start; text slot 16 asks for a sample.
     lines = ['<g id="cirrus_panel">', header(sdk, 'cirrus', 4),
              '  <!-- The sample, in four outlines of 25 of its 96 bins each (paths 0 to 3), at rest flat,',
              '       each about its own centre, as display.cpp draws them. -->']
@@ -55,9 +55,12 @@ def cirrus(sdk):
         d = 'M' + ' L'.join(f'{x:.4f}'.rstrip('0').rstrip('.') + f' {y}' for x, y in top + bottom) + ' Z'
         lines.append(f'  <path id="cirrus_node_{p}" transform="matrix(1 0 0 1 {centre:.4f} 130)" d="{d}" '
                      f'fill="none" stroke="{PALETTE[0]}" stroke-width="1"/>')
-    lines += ['  <!-- Where the scan starts the grains: a line across the sample. -->',
-              f'  <path id="cirrus_node_12" transform="{PARKED}" d="M-0.5 -46 L0.5 -46 L0.5 46 L-0.5 46 Z" '
-              f'fill="{PALETTE[1]}" stroke="{PALETTE[1]}" stroke-width="0.5"/>',
+    lines += ['  <!-- A playhead for each held note: where its scan starts the grains. -->',
+              *[f'  <path id="cirrus_node_{n}" transform="{PARKED}" d="M-0.5 -46 L0.5 -46 L0.5 46 L-0.5 46 Z" '
+                f'fill="{PALETTE[1]}" stroke="{PALETTE[1]}" stroke-width="0.5"/>' for n in (12, 31, 32, 33)],
+              '  <!-- Where every note\'s scan starts: the trim\'s start and Position. -->',
+              f'  <path id="cirrus_node_34" transform="{PARKED}" d="M-0.5 -46 L0.5 -46 L0.5 46 L-0.5 46 Z" '
+              f'fill="{PALETTE[0]}" stroke="{PALETTE[0]}" stroke-width="0.5"/>',
               '  <!-- The grains. -->', *circles('cirrus', 13, 16, 8),
               "  <!-- The trim's start and end, which Shift's first two encoders move. -->",
               *[f'  <path id="cirrus_node_{n}" transform="{PARKED}" d="M-0.75 -44 L0.75 -44 L0.75 44 L-0.75 44 Z" '

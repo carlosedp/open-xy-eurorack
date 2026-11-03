@@ -35,11 +35,12 @@ Stutter, Octave Down, Frozen and Rewind.
 
 Cirrus draws its own screen over the stock sampler's page: the SDK's two-row
 header, the page the encoders edit large and bright and the other small and
-grey, over the track's sample as a waveform. While notes are held, a line
-shows where the scan starts the grains, Position into the trim and moving on
-at Speed from each note, and the grains appear there as Density schedules
-them, swell and fade over the life Size gives them, and read on at their
-Pitch. The screen runs apart from the audio, so these are the controls'
+grey, over the track's sample as a waveform. A dim line marks where every
+note's scan starts, Position into the trim. Each held note, up to four, has a
+playhead that moves on from there at Speed, and its grains appear there as
+Density schedules them, swell and fade over the life Size gives them, read on
+at their Pitch, and sit higher or lower as Spread pans them, left above and
+right below. The screen runs apart from the audio, so these are the controls'
 grains, not the voices' own. The grains are the screen's foreground, over a
 dim waveform. Without a sample it asks for one.
 
@@ -99,6 +100,7 @@ the same tone at Speed 99, so that both read grains of the tone as it flows
 
 Deliberate differences:
 
+- **The grains 9 dB louder.** Clouds plays its grains at 0.707 x 1.2 of its dry/wet crossfade and halves them, to sit beside its dry signal. Cirrus has no dry: it raises the grains by 2√2 into Clouds' soft limit, so that a cloud of grains plays within about 4 dB of the stock sampler playing the sample as it is, and a sparse one about as loud. The reference kit divides it out to compare Clouds' grains themselves.
 - **A sample in place of the recording.** The grains read the sample and nothing records: no Freeze, which Speed 50 replaces, and no feedback, diffuser or reverb, which need a recording or a long memory for every note (Stratus has them).
 - **Speed.** Clouds' grains follow its recording head as it moves on with the input. Cirrus' follow a scan through the sample, at Speed; at 99 it moves as the head does. Position measures forward from the scan, where Clouds' measures back from the head.
 - **Up to 6 grains a note**, the first 2 at high quality. Clouds plays up to 32 in stereo and 40 in mono, at high quality while fewer than a quarter play. Density aims for 32 overlap³ grains in stereo and 40 in mono, which passes 6 below 20 and above 79 (22 and 77 in mono): there Cirrus is less dense than Clouds, and quieter.

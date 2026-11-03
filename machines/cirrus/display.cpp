@@ -12,7 +12,8 @@
 namespace cirrus {
 namespace draw = opxy::draw;
 
-const u32 kWave = 0, kFirstHeader = 4, kScan = 12, kFirstGrain = 13, kStart = 29, kEnd = 30, kMessage = 16;
+const u32 kWave = 0, kFirstHeader = 4, kFirstGrain = 13, kStart = 29, kEnd = 30, kOrigin = 34, kMessage = 16;
+const u32 kHeads[kPlayheads] = {12, 31, 32, 33};  // a playhead for each held note
 const i32 kLeft = 40, kWidth = 400, kMiddle = 130, kHalfHeight = 40;  // the waveform, pixels
 const u32 kBinsPerPath = 24;                                           // and one shared with the next
 enum Shade : u32 { kDim, kMid, kBright };
@@ -136,8 +137,8 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
         state.seed = 1;
         state.serial = input.note_serial;
         state.generation = 0;
-        state.scan = 0;
-        state.wait = 0;
+        for (u32 h = 0; h < kPlayheads; ++h) state.heads[h].active = 0;
+        state.order = 0;
     }
     state.initialized = 1;
     state.track = input.track;
@@ -150,7 +151,8 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
         // and the message still show.
         if (!frame.paths[0].key) draw_wave(state, o, frame);
         for (u32 p = 0; p < Frame::path_count; ++p) draw::hide(frame, kWave + p);
-        draw::hide(frame, kScan);
+        for (u32 h = 0; h < kPlayheads; ++h) draw::hide(frame, kHeads[h]);
+        draw::hide(frame, kOrigin);
         draw::hide(frame, kStart);
         draw::hide(frame, kEnd);
         for (u32 i = 0; i < kShownGrains; ++i) draw::hide(frame, kFirstGrain + i);
@@ -168,24 +170,47 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
     const u32 rate = o.rate >= 8000 && o.rate <= 192000 ? o.rate : 44100;
     const u32 region = end - begin < kFrames ? end - begin : kFrames - 1;  // as the voices read it
     const i32 dt = input.reduced_motion ? 0 : draw::clamp(input.elapsed, 0, 102);
-    const bool held = input.held_notes != draw::notes_unavailable && input.held_notes > 0;
-    const bool struck = input.note_serial != state.serial;
-    state.serial = input.note_serial;
 
-    // A note plays from Position again; the scan moves on at Speed, a share of
-    // the sample's own rate, turned around when the region plays reversed, and
-    // wraps within the trim.
-    if (struck) state.scan = 0;
+    // Each held note plays from Position again, its scan moving on at Speed, a
+    // share of the sample's own rate, turned around when the region plays
+    // reversed, and wrapping within the trim: a playhead for each, up to four,
+    // the newest replacing the oldest. As notes are released the oldest go.
     const i32 speed = clamp(o.reverse ? -c.speed : c.speed, -65535, 65535);
     const i32 per_second = mul31(speed << 15, static_cast<i32>(rate));  // frames
-    state.scan += per_second * dt / 4;  // Q8 frames: x 256 / 1024
-    const i32 span = static_cast<i32>(region << 8);  // Q8 frames
-    state.scan %= span;
-    if (state.scan < 0) state.scan += span;
-    const u32 start = (multiply_shift(region << 8, static_cast<u32>(c.position) << 1, 32) + static_cast<u32>(state.scan)) %
-                      static_cast<u32>(span);
+    const i32 span = static_cast<i32>(region << 8);                    // Q8 frames
+    const u32 origin = multiply_shift(region << 8, static_cast<u32>(c.position) << 1, 32);  // Q8 frames
+    u32 started = input.note_serial - state.serial;
+    if (started > kPlayheads) started = kPlayheads;
+    state.serial = input.note_serial;
+    for (u32 n = 0; n < started; ++n) {
+        u32 slot = 0;
+        for (u32 h = 0; h < kPlayheads; ++h) {
+            if (!state.heads[h].active) {
+                slot = h;
+                break;
+            }
+            if (state.heads[h].serial < state.heads[slot].serial) slot = h;
+        }
+        Playhead& head = state.heads[slot];
+        head.active = 1;
+        head.serial = ++state.order;
+        head.scan = 0;
+        head.wait = 0;  // a note seeds a grain at once
+        head.seeded = 0;
+    }
+    u32 live = 0;
+    for (u32 h = 0; h < kPlayheads; ++h) live += state.heads[h].active;
+    const u32 notes = input.held_notes == draw::notes_unavailable ? live : input.held_notes;
+    while (live > notes) {
+        u32 oldest = kPlayheads;
+        for (u32 h = 0; h < kPlayheads; ++h)
+            if (state.heads[h].active && (oldest == kPlayheads || state.heads[h].serial < state.heads[oldest].serial))
+                oldest = h;
+        state.heads[oldest].active = 0;
+        --live;
+    }
 
-    // Clouds' grains: a voice renders up to kGrains of them.
+    // Clouds' grains: a voice renders up to kGrains of them, each at its own pan.
     const i32 life = clamp(mul31(lookup(kGrainSize, c.size), 194783), 8, 1024);  // samples / 256 / 44100 x 1024
     const i32 overlap_grains = c.overlap > 0 ? 1 + mul31(c.overlap, static_cast<i32>(kMaxGrains) - 1) : 0;
     const i32 grains = overlap_grains < static_cast<i32>(kGrains) ? overlap_grains : static_cast<i32>(kGrains);
@@ -193,23 +218,36 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
     const u32 ratio = exp2(octaves(c.semitones), 16);  // Q16
     const i32 reading = static_cast<i32>(multiply_shift(ratio, rate, 16));
 
-    state.wait -= dt;
-    if (struck) state.wait = 0;  // a note seeds a grain at once
-    if (!held && !struck) state.wait = life;
-    const i32 count = struck && !grains ? 1 : grains;
-    for (u32 spawned = 0; count && state.wait <= 0 && spawned < kShownGrains; ++spawned) {
-        const i32 interval = life / count > 0 ? life / count : 1;
-        state.wait += c.deterministic ? interval
-                                      : interval / 2 + static_cast<i32>(random_word(state.seed) >> 16) * interval / 65536;
-        for (u32 i = 0; i < kShownGrains; ++i) {
-            ShownGrain& g = state.grains[i];
-            if (g.life) continue;
-            g.frame = start;
-            g.y = (kMiddle - kHalfHeight + 4 + static_cast<i32>(random_word(state.seed) >> 16) * (2 * kHalfHeight - 8) / 65536) * unit;
-            g.age = 0;
-            g.life = life;
-            break;
+    for (u32 h = 0; h < kPlayheads; ++h) {
+        Playhead& head = state.heads[h];
+        if (!head.active) {
+            draw::hide(frame, kHeads[h]);
+            continue;
         }
+        head.scan = (head.scan + per_second * dt / 4) % span;  // Q8 frames: x 256 / 1024
+        if (head.scan < 0) head.scan += span;
+        const u32 start = (origin + static_cast<u32>(head.scan)) % static_cast<u32>(span);
+        head.wait -= dt;
+        // At Density's middle a note plays its own grain alone.
+        const i32 count = grains ? grains : head.seeded ? 0 : 1;
+        for (u32 spawned = 0; count && head.wait <= 0 && spawned < kShownGrains; ++spawned) {
+            const i32 interval = life / count > 0 ? life / count : 1;
+            head.wait += c.deterministic ? interval
+                                         : interval / 2 + static_cast<i32>(random_word(state.seed) >> 16) * interval / 65536;
+            head.seeded = 1;
+            for (u32 i = 0; i < kShownGrains; ++i) {
+                ShownGrain& g = state.grains[i];
+                if (g.life) continue;
+                g.frame = start;
+                // Up is left, down is right: Spread pans each grain at random about the centre.
+                g.y = kMiddle * unit + mul31(mul31(c.spread, noise_of(state.seed)), (kHalfHeight - 8) * unit);
+                g.age = 0;
+                g.life = life;
+                break;
+            }
+        }
+        draw::place(frame, kHeads[h], x_of(begin + (start >> 8), o.frames), kMiddle * unit, unit, kMid,
+                    draw::fill_and_stroke);
     }
 
     for (u32 i = 0; i < kShownGrains; ++i) {
@@ -231,9 +269,8 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
         draw::place(frame, kFirstGrain + i, x_of(begin + (g.frame >> 8), o.frames), g.y, radius, kBright,
                     draw::fill_and_stroke);
     }
-    if (held) draw::place(frame, kScan, x_of(begin + (start >> 8), o.frames), kMiddle * unit, unit, kMid,
-                          draw::fill_and_stroke);
-    else draw::hide(frame, kScan);
+    // Where every note's scan starts: the trim's start and Position, dim.
+    draw::place(frame, kOrigin, x_of(begin + (origin >> 8), o.frames), kMiddle * unit, unit, kDim, draw::fill_and_stroke);
     // The trim's ends, which Shift's first two encoders move.
     draw::place(frame, kStart, x_of(begin, o.frames), kMiddle * unit, unit, kBright, draw::fill_and_stroke);
     draw::place(frame, kEnd, x_of(end - 1, o.frames), kMiddle * unit, unit, kBright, draw::fill_and_stroke);

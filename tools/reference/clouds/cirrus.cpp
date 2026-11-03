@@ -47,7 +47,10 @@ int main(int argc, char** argv) {
     const size_t blocks = static_cast<size_t>(seconds * rate / opxy::block_frames);
     for (size_t b = 0; b < blocks; ++b) {
         cirrus::render_sample(voice, block);
-        for (size_t i = 0; i < opxy::block_frames * 2; ++i) x.push_back(static_cast<float>(out[i] / 1073741824.0));
+        // Clouds' units, less the 2 sqrt 2 Cirrus raises its grains by (sample.cpp):
+        // below its soft limit, the kit compares Clouds' grains themselves.
+        for (size_t i = 0; i < opxy::block_frames * 2; ++i)
+            x.push_back(static_cast<float>(out[i] / 1073741824.0 / 2.8284271247461903));
     }
     FILE* f = std::fopen(argv[11], "wb");
     if (!f) return 1;

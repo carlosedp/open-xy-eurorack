@@ -11,6 +11,16 @@ namespace {
 u32 seeds;
 
 const u32 kLevelLimit = (1u << 30) - 1;  // a pad's level below 8, so that Q28 holds it
+
+// Clouds plays its grains at 0.707 x 1.2 of its dry/wet crossfade and halves
+// them, to sit beside the dry signal it also plays. Cirrus plays no dry: it
+// raises the grains by 2 sqrt 2 (9 dB) into Clouds' soft limit, so that a
+// cloud of grains plays about as loud as the stock sampler plays the sample.
+const i32 kHalfSqrt2 = 1518500250;  // 0.7071, Q31
+inline i32 makeup(i32 x) {
+    const i32 half = mul31(x, kHalfSqrt2);  // x / sqrt 2, then times 4
+    return half >= kMaximum / 4 ? kMaximum : half <= -kMaximum / 4 ? -kMaximum : half * 4;
+}
 }
 
 void initialize(Voice& v, const opxy::SampleView& sample) {
@@ -55,8 +65,8 @@ void render_sample(Voice& v, const opxy::SampleBlock& block) {
         v.scan += v.step;
         i32* out = block.output + half * kBlock * channels;
         for (u32 t = 0; t < kBlock; ++t) {
-            l[t] = soft_limit(l[t]);
-            r[t] = soft_limit(r[t]);
+            l[t] = soft_limit(makeup(l[t]));
+            r[t] = soft_limit(makeup(r[t]));
         }
         if (!unity) {
             for (u32 t = 0; t < kBlock; ++t) {
