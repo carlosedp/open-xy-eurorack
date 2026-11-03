@@ -56,6 +56,8 @@ def cirrus(sdk):
     # notes' playheads, 35..66 two trail dots behind each grain, 67..82 the
     # grains; text slot 16 asks for a sample.
     lines = ['<g id="cirrus_panel">', header(sdk, 'cirrus', 4),
+             "  <!-- Opaque below the header: the stock sampler's page and its waveform stay hidden. -->",
+             '  <path d="M0,38 L480,38 L480,220 L0,220 Z" fill="#000000"/>',
              '  <!-- The sample, in four outlines of 25 of its 96 bins each (paths 0 to 3), at rest flat,',
              '       each about its own centre, as display.cpp draws them. -->']
     for p in range(4):
@@ -66,13 +68,13 @@ def cirrus(sdk):
         lines.append(f'  <path id="cirrus_node_{p}" transform="matrix(1 0 0 1 {centre:.4f} 130)" d="{d}" '
                      f'fill="none" stroke="{SHADES[2]}" stroke-width="1"/>')
     lines += ['  <!-- The waveform lit under each grain: a bar as tall as the sample, scaled down. -->',
-              *bars('cirrus', 12, 16, 1, 40, SHADES[3]),
+              *bars('cirrus', 12, 16, 1, 60, SHADES[3]),
               "  <!-- Where every note's scan starts: the trim's start and Position. -->",
-              *bars('cirrus', 28, 1, 0.5, 46, SHADES[1]),
+              *bars('cirrus', 28, 1, 0.5, 66, SHADES[1]),
               "  <!-- The trim's start and end, which Shift's first two encoders move. -->",
-              *bars('cirrus', 29, 2, 0.75, 44, SHADES[5]),
+              *bars('cirrus', 29, 2, 0.75, 64, SHADES[5]),
               '  <!-- A playhead for each held note: where its scan starts the grains. -->',
-              *bars('cirrus', 31, 4, 0.5, 46, SHADES[3]),
+              *bars('cirrus', 31, 4, 0.5, 66, SHADES[3]),
               '  <!-- Two trail dots behind each grain, along what it has read. -->',
               *circles('cirrus', 35, 32, 8, SHADES[2]),
               '  <!-- The grains, over everything else. -->', *circles('cirrus', 67, 16, 8, SHADES[6]),

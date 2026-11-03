@@ -27,16 +27,18 @@ encoder switches pages:
 | **Jitter** | (Beads' pitch randomness) | Detunes each grain at random, by up to a semitone at 99; at 0 not at all |
 
 Shift and the encoders edit the stock sampler's own settings for the track,
-as on its page: Shift + 1 the sample start, + 2 the sample end, + 3 the
-direction, which plays every grain backward, and + 4 the gain. Stock saves them with the track; while Shift is
-held the header shows them, and the waveform always marks the start and end.
+as on its page: Shift + 1 the sample start, + 2 the sample end, + 3 both
+together, moving the window between them through the sample, and + 4 the gain.
+Stock saves them with the track; while Shift is held the header shows the
+start, the end and the window's length (the gain it cannot read), and the
+waveform always marks the start and end.
 
 Positions are 99ths of the control's travel. Presets: Cloud, Stretch,
 Stutter, Octave Down, Frozen and Rewind.
 
 Cirrus draws its own screen over the stock sampler's page: the SDK's two-row
 header, the page the encoders edit large and bright and the other small and
-grey, over the track's sample as a dim waveform. A faint line marks where
+grey, over the track's sample as a dim waveform, covering the stock page beneath. A faint line marks where
 every note's scan starts, Position into the trim. Each held note, up to four,
 has a playhead that pulses as its note starts and moves on from there at Speed.
 Its grains appear there as Density schedules them and are the screen's
@@ -57,10 +59,10 @@ for one.
   from Position again. At Density 50 that grain is all a note plays.
 - **The sample's trim** bounds the grains: they start, and end, inside it.
   Shift + encoders 1 and 2 set it. A trim shorter than 128 frames plays nothing.
-- **Direction.** Reversed, each grain plays backward, from the far end of
-  the stretch it would read forward. Speed alone sets which way the scan moves:
-  forward above 50, back below. Clouds' grains only play forward; Beads' can
-  play backward, as these do.
+- **Direction.** Speed alone sets which way the scan moves: forward above
+  50, back below. A region reversed on the stock sampler plays each grain
+  backward, from the far end of the stretch it would read forward, as Beads'
+  can; Cirrus' screen has no control for it.
 - **Gain.** Shift + encoder 4 scales the output, as the stock sampler's gain.
 - **Level.** The pad's level scales the output. A sample at full scale plays
   at most at half the OP-XY's full scale, Clouds' own full scale.

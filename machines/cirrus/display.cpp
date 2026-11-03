@@ -25,7 +25,7 @@ const u32 kFirstTrail = kFirstHead + kPlayheads;         // kTrails behind each 
 const u32 kFirstGrain = kFirstTrail + kShownGrains * kTrails;
 const u32 kMessage = 16;                                 // text slot: asks for a sample
 static_assert(kFirstGrain + kShownGrains == kNodes, "Cirrus' nodes");
-const i32 kLeft = 40, kWidth = 400, kMiddle = 130, kHalfHeight = 40;  // the waveform, pixels
+const i32 kLeft = 40, kWidth = 400, kMiddle = 130, kHalfHeight = 60;  // the waveform, pixels
 const u32 kBinsPerPath = 24;                                           // and one shared with the next
 const i32 kPulse = 256;                                                // a note's pulse, Q10 seconds
 // The palette, darkest to brightest (tools/clouds_panels.py).
@@ -47,35 +47,18 @@ inline void place_caption(char* out, u32 frame, u32 frames) {
     caption(out, static_cast<i32>(fraction > 0x7fffffffu ? 0x7fffffffu : fraction));
 }
 
-// The region's gain in whole dB against unity (Q27): log2 from its top bit and
-// the bits below read linearly, within half a dB, times 6.02.
-inline void gain_caption(char* out, u32 level) {
-    if (!level) {
-        draw::copy(out, draw::header_capacity, "off");
-        return;
-    }
-    const unsigned t = top_bit(level);
-    const u32 below = t >= 16 ? (level >> (t - 16)) & 0xffffu : (level << (16 - t)) & 0xffffu;
-    const i32 octaves_q16 = (static_cast<i32>(t) - 27) * 65536 + static_cast<i32>(below);
-    const i32 db = (octaves_q16 * 6 + mul31(octaves_q16, 44238163) + 32768) >> 16;  // 6.0206 dB an octave
-    const u32 magnitude = static_cast<u32>(db < 0 ? -db : db);
-    if (db) *out++ = db < 0 ? '-' : '+';
-    if (magnitude >= 10) *out++ = static_cast<char>('0' + magnitude / 10 % 10);
-    *out++ = static_cast<char>('0' + magnitude % 10);
-    *out = 0;
-}
-
-// Where a frame of the sample sits across the waveform, Q10 pixels.
-inline i32 x_of(u32 frame, u32 frames) {
+// A frame's share of the sample, Q31, below 1: the reciprocal is good to
+// 2e-6, so the last frames can round up to 1, which a Q31 word cannot hold.
+inline i32 share_of(u32 frame, u32 frames) {
     const unsigned t = top_bit(frames);
-    const u32 fraction = multiply_shift(frame < frames ? frame : frames - 1, reciprocal(frames, 31 + t), t);  // Q31
-    return (kLeft + mul31(static_cast<i32>(fraction), kWidth)) * draw::unit;
+    const u32 fraction = multiply_shift(frame < frames ? frame : frames - 1, reciprocal(frames, 31 + t), t);
+    return static_cast<i32>(fraction > 0x7fffffffu ? 0x7fffffffu : fraction);
 }
+// Where a frame of the sample sits across the waveform, Q10 pixels.
+inline i32 x_of(u32 frame, u32 frames) { return (kLeft + mul31(share_of(frame, frames), kWidth)) * draw::unit; }
 // The overview's bin a frame falls in.
 inline u32 bin_of(u32 frame, u32 frames) {
-    const unsigned t = top_bit(frames);
-    const u32 fraction = multiply_shift(frame < frames ? frame : frames - 1, reciprocal(frames, 31 + t), t);  // Q31
-    return static_cast<u32>(mul31(static_cast<i32>(fraction), static_cast<i32>(draw::overview_bins)));
+    return static_cast<u32>(mul31(share_of(frame, frames), static_cast<i32>(draw::overview_bins)));
 }
 
 inline void display_reset(DisplayState& state) {
@@ -126,7 +109,9 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
 
     // The header: Position, Size, Density and Texture, then Pitch, Speed,
     // Spread and Jitter; all 0..99. While Shift is held the edited row shows
-    // the stock sampler's settings Shift edits: start, end, direction, gain.
+    // what Shift edits on the stock sampler: the start, the end and the window
+    // they make, which Shift + 3 moves, as 0..99 of the sample, and its gain,
+    // which the screen cannot read.
     const draw::SampleOverview& o = *opxy_sample_overview();
     // The trim as the voices play it: the whole sample while the region's
     // record gives no markers yet, as SampleBlock.region does then.
@@ -142,13 +127,13 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
         const u32 first = page * opxy::page_controls;
         titles[first] = "Start";
         titles[first + 1] = "End";
-        titles[first + 2] = "Dir";
+        titles[first + 2] = "Window";
         titles[first + 3] = "Gain";
         const bool known = o.assigned && o.loaded && o.frames;
         place_caption(values[first], known ? begin : 0, known ? o.frames : 1);
         place_caption(values[first + 1], known ? end : 1, known ? o.frames : 1);
-        draw::copy(values[first + 2], draw::header_capacity, o.reverse ? "rev" : "fwd");
-        gain_caption(values[first + 3], o.level);
+        place_caption(values[first + 2], known ? end - begin : 0, known ? o.frames : 1);
+        values[first + 3][0] = 0;
     }
     draw::page_header(state.header, input, frame, titles, values, kFirstHeader);
 
