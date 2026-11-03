@@ -22,6 +22,7 @@ static_assert(kFirstGrain + kShownGrains == kNodes, "Stratus' nodes");
 const i32 kLeft = 40, kRight = 440, kMiddle = 130, kHalfHeight = 75;  // the tape, pixels
 const i32 kWidth = kRight - kLeft;                                     // a second of it
 const i32 kColumn = kWidth * draw::unit / static_cast<i32>(kBars);      // a bar's width, Q10 pixels
+const i32 kShortestShown = 80;  // Q10 seconds: about five frames
 // The palette, darkest to brightest (tools/clouds_panels.py).
 enum Shade : u32 { kFaint, kDim, kLow, kMid, kHigh, kBright, kWhite };
 
@@ -102,6 +103,12 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
     // Clouds plays up to about one grain more for each 1/23 of overlap.
     const i32 grains = c.overlap > 0 ? 1 + mul31(c.overlap, 23) : 0;
     const i32 dt = input.reduced_motion ? 0 : draw::clamp(input.elapsed, 0, 102);
+    // A grain shorter than a few frames would be drawn at whatever point of its
+    // window a frame lands on, big and bright at some sizes and faint at
+    // others: on screen it lives at least kShortestShown, its window spread
+    // over that, and its peak size follows its real length.
+    const i32 shown = life > kShortestShown ? life : kShortestShown;
+    const i32 peak = unit * 2 / 5 + unit * 3 / 5 * (life < 512 ? life : 512) / 512;  // its largest scale
     // Its window, as Clouds shapes it (start_grain), for its glow.
     const bool smooth = c.window_shape >= 1 << 30;
     const i32 smoothness = smooth ? (c.window_shape - (1 << 30)) >> 15 : 0;
@@ -135,7 +142,7 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
     state.wait -= dt;
     if (!grains) state.wait = 0;
     for (u32 spawned = 0; grains && state.wait <= 0 && spawned < kShownGrains; ++spawned) {
-        const i32 interval = life / grains > 0 ? life / grains : 1;
+        const i32 interval = shown / grains > 0 ? shown / grains : 1;
         // At regular intervals below Density's middle, at random above it.
         state.wait += c.deterministic ? interval
                                       : interval / 2 + static_cast<i32>(next_random(state.seed) >> 16) * interval / 65536;
@@ -146,7 +153,7 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
             g.y = (kMiddle - kHalfHeight + 12) * unit +
                   static_cast<i32>(next_random(state.seed) >> 16) * (2 * kHalfHeight - 24) / 65536 * unit;
             g.age = 0;
-            g.life = life;
+            g.life = shown;
             g.drift = drift;
             g.glow = 0;
             break;
@@ -187,7 +194,7 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
         const u32 envelope = static_cast<u32>(g.age) * (0x80000000u / static_cast<u32>(g.life));
         const i32 gain = smooth ? gain_at<true, true>(envelope, smoothness, slope)
                                 : gain_at<true, false>(envelope, smoothness, slope);  // Q15
-        draw::place(frame, grain, g.x, g.y, unit / 5 + 4 * unit / 5 * gain / 32768, kMid + static_cast<u32>(3 * gain / 32768),
+        draw::place(frame, grain, g.x, g.y, unit / 5 + (peak - unit / 5) * gain / 32768, kMid + static_cast<u32>(3 * gain / 32768),
                     draw::fill_and_stroke);
         // Its trail: dots back along what it has read, dimmer and smaller.
         for (u32 k = 0; k < kTrails; ++k) {
