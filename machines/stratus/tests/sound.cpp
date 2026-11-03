@@ -36,7 +36,7 @@ const opxy::Buffer kBuffer = {memory, stratus::kBufferBytes / 4};
 // Places the effect on a send: initialize, then the blocks that clear its buffer.
 void place() {
     stratus::initialize(state);
-    const i32 parameters[8] = {};
+    const i32 parameters[12] = {};
     i32 l[opxy::block_frames], r[opxy::block_frames];
     while (state.cleared < sizeof(stratus::Clouds)) stratus::process(state, kBuffer, l, r, parameters);
 }
@@ -128,7 +128,7 @@ int main() {
     // Outside a send the buffer is empty: silence, whatever comes in.
     {
         stratus::initialize(state);
-        const i32 parameters[8] = {};
+        const i32 parameters[12] = {};
         i32 l[opxy::block_frames], r[opxy::block_frames];
         for (unsigned i = 0; i < opxy::block_frames; ++i) l[i] = r[i] = 0x40000000;
         const opxy::Buffer none = {nullptr, 0};
@@ -139,15 +139,16 @@ int main() {
     }
 
     // The controls play Clouds' knobs: Position, Size, Pitch and Density, then on
-    // the same encoders Freeze, Texture and Reverb. Dry is the stock mixer's:
-    // whatever it reads, Stratus plays Clouds without feedback.
+    // the second page Feedback, Texture and Reverb, and the shift row's Freeze.
+    // Dry is the stock mixer's: whatever it reads, Stratus plays Clouds.
     {
         place();
-        const Settings s = {of99(30), of99(60), of99(85), of99(30), of99(92), 0.0, of99(30), 0.75};
+        const Settings s = {of99(30), of99(60), of99(85), of99(30), of99(92), of99(40), of99(30), 0.75};
         const Output knobs = send(s, 1.5, tone(330), tone(330));
         place();
-        const i32 controls[8] = {q31(s.position), q31(s.size),    q31(s.pitch), q31(s.density),
-                                 q31(s.freeze),   q31(s.texture), q31(0.6),     q31(s.reverb)};
+        const i32 controls[12] = {q31(s.position), q31(s.size),    q31(s.pitch), q31(s.density),
+                                  q31(s.feedback), q31(s.texture), q31(0.6),     q31(s.reverb),
+                                  q31(s.freeze),   0,              0,            0};
         i32 l[opxy::block_frames], r[opxy::block_frames];
         double difference = 0;
         for (size_t b = 0; b < knobs.left.size() / opxy::block_frames; ++b) {

@@ -24,12 +24,13 @@ const u32 kReverb = 22589;     // the reverb's ten lines (clouds.h)
 // The four controls, then the four on Shift (definition.json).
 // Clouds' eight knobs, as the DSP reads them (controls_of).
 enum Knob : u32 { kPosition, kSize, kDensity, kTexture, kPitch, kFeedback, kReverbAmount, kFreeze, kKnobs };
-// The controls definition.json declares: Clouds' four main ones, then on a
-// press of the same encoders Freeze, Texture, Dry and Reverb. Dry is the stock
-// mixer's (machine.json dryParameter): Stratus never reads it.
+// The words process receives (definition.json): Clouds' four main controls,
+// then on the second page Feedback, Texture, Dry and Reverb, then the shift
+// row's Freeze. Dry is the stock mixer's (machine.json dryParameter): Stratus
+// never reads it.
 enum Control : u32 {
     kControlPosition, kControlSize, kControlPitch, kControlDensity,
-    kControlFreeze, kControlTexture, kControlDry, kControlReverb
+    kControlFeedback, kControlTexture, kControlDry, kControlReverb, kControlFreeze
 };
 
 // Clouds' Grain, its envelope rendered in steps as it plays.

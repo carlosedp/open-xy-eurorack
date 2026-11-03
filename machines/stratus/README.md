@@ -12,25 +12,30 @@ stereo recording, each channel's grains playing its own. The return is all
 wet; each track keeps its dry sound in the stock mixer, and its send level sets
 how much reaches Stratus.
 
-Clouds' four main controls, and on a press of the same encoder its other four:
+All eight of Clouds' knobs, on two pages of four: a press of any encoder
+switches pages. Freeze, Clouds' button, is the shift row: hold Shift and turn
+encoder 1.
 
-| Encoder | Control | Press for | Clouds' | Does |
-| --- | --- | --- | --- | --- |
-| 1 | **Position** | | POSITION | How far back in the recording grains start: 0 the most recent, 99 a second ago |
-| | | **Freeze** | FREEZE | Stops recording: the grains play what the buffer holds |
-| 2 | **Size** | | SIZE | Each grain's length, 32 ms to 0.5 s |
-| | | **Texture** | TEXTURE | The grain window, hard-edged at 0 to smooth at 75, then the diffuser blurs them toward 99 |
-| 3 | **Pitch** | | PITCH | Transposes the grains, lingering at Clouds' notches: -24 at 0, -12 at 7, -7 at 13, 0 from 46 to 53, +7 at 86, +12 at 92, +24 at 99 |
-| | | **Dry** | BLEND (dry/wet) | How much each track's send turns down its dry sound: at 0 a track's send is its dry/wet, fully wet at 100%; at 99 sends leave the dry as it is. The stock mixer's, through `dryParameter` |
-| 4 | **Density** | | DENSITY | Grains at regular intervals up to 46, none from 47 to 52, at random from 53; more of them further from the middle |
-| | | **Reverb** | BLEND (reverb) | Clouds' reverb on the return |
+| Encoder | Page 1 | Page 2 | Shift |
+| --- | --- | --- | --- |
+| 1 | **Position** (POSITION): how far back in the recording grains start, 0 the most recent, 99 a second ago | **Feedback** (FEEDBACK): the return fed back into the recording | **Freeze** (FREEZE): off, or on to stop recording, the grains playing what the buffer holds |
+| 2 | **Size** (SIZE): each grain's length, 32 ms to 0.5 s | **Texture** (TEXTURE): the grain window, hard-edged at 0 to smooth at 75, then the diffuser blurs them toward 99 | |
+| 3 | **Pitch** (PITCH): transposes the grains, lingering at Clouds' notches: -24 at 0, -12 at 7, -7 at 13, 0 from 46 to 53, +7 at 86, +12 at 92, +24 at 99 | **Dry** (BLEND, dry/wet): how much each track's send turns down its dry sound; at 0 a track's send is its dry/wet, fully wet at 100%, and at 99 sends leave the dry as it is. The stock mixer's, through `dryParameter` | |
+| 4 | **Density** (DENSITY): grains at regular intervals up to 46, none from 47 to 52, at random from 53; more of them further from the middle | **Reverb** (BLEND, reverb): Clouds' reverb on the return | |
 
-Pressing an encoder again returns it to its main control. The alternates need
-an SDK whose send pages carry an effect's controls 5 to 8 (PR A); on one
-without, they read 0: hard-edged grains, not frozen, no feedback or reverb.
+Values read 0–99; Freeze reads off or on. With the shift row, Shift no longer
+turns the other controls in fine steps. Presets: Cloud, Shimmer, Stutter,
+Octave Down, Wash and Crackle.
 
-Values read 0–99, the stock FX captions; Freeze reads off or on. Presets: Cloud,
-Shimmer, Stutter, Octave Down, Wash and Crackle.
+Stratus draws its own send page: the SDK's two-row header, the page the
+encoders edit large and bright and the other small and grey, and while Shift
+is held, Freeze in the edited row. Below it, a second of the recording, now at
+its right end, with a notch where Position starts the grains. The grains
+appear there as Density schedules them, swell and fade over the life Size gives
+them, and drift as their Pitch reads the recording against the record head:
+toward now when pitched up, away when down, and on through a frozen recording,
+which lights up. The page runs apart from the audio, so these are the
+controls' grains, not the voices' own.
 
 ```sh
 python ../open-xy/sdk.py test --machine machines/stratus
@@ -41,10 +46,11 @@ is how the sound is checked against Clouds.
 
 | File | Owns |
 | --- | --- |
-| [definition.json](definition.json), [machine.json](machine.json) | Controls, presets, the send buffer, SDK version and identity |
+| [definition.json](definition.json), [machine.json](machine.json) | Controls, the shift row, presets, the send buffer and page, SDK version |
 | [core.h](core.h) | The effect's state and Clouds' state in the send buffer |
 | [clouds.h](clouds.h) | Clouds' recording, grains, feedback, diffuser and reverb |
 | [fx.cpp](fx.cpp) | The callbacks: clearing the buffer, the send in and the return out |
+| [display.h](display.h), [display.cpp](display.cpp), [panel.svg.fragment](panel.svg.fragment) | The send page, its state and its artwork, from [tools/clouds_panels.py](../../tools/clouds_panels.py) |
 | [fixed.h](fixed.h), [tables.h](tables.h) | Fixed-point arithmetic and Clouds' lookup tables |
 | [tests/sound.cpp](tests/sound.cpp) | Sound checks: the controls playing Clouds' knobs, silence outside a send and while clearing, an old buffer's contents never heard, silence in and out with no offset left, grains in tune, Density's dead zone, the channels kept apart, a quiet send's detail, and at Clouds' other knobs Freeze, Feedback dying away and staying in range, Reverb's tail, an engine reset |
 
@@ -73,7 +79,6 @@ Deliberate differences:
 - **Finer storage.** The recording keeps 32 bits where Clouds' keeps 16, within the same limits: an OP-XY send arrives far below Clouds' full scale, where 16 bits would leave a few steps of each note, a burst of noise in place of the grains. The reverb and diffuser keep 32 bits where Clouds' reverb keeps 12, and the return keeps 32 where Clouds' output keeps 16. Tails decay as Clouds' do, below where Clouds' fall to zero.
 - **Modulation per block.** The reverb's slow modulation (0.5 and 0.3 Hz) steps at each 32-sample block, where Clouds steps it every 32 samples.
 - **The return 12 dB louder.** Clouds plays its dry at 0.707 of the input and its wet at 0.707 × 1.2 of the grains, then halves both, so its wet sits 1.2 times above its dry. The OP-XY's mixer plays the dry as it is, so raising Clouds' wet by 2√2 (9 dB) would sit it against that dry as Clouds' wet sits against its own. Against a full mix on the OP-XY that still sounded low, so Stratus raises it by 4 (12 dB), 3 dB above Clouds' balance, saturating at full scale. Tests and the reference kit compare Clouds' wet itself (`render`).
-- **Feedback without a control.** Clouds' feedback is ported and tested, but its encoder press is Dry: a send effect has eight controls, and Dry lets the grains be heard without the dry sound over them.
 - **Not ported.** Stereo spread (grains stay centred, keeping the send's own stereo), the trigger input, and Clouds' other modes: Stretch, Looping Delay and the spectral mode.
 
 ## Native notes

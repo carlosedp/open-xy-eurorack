@@ -9,6 +9,7 @@ Nothing here is built into firmware. Downloads and builds go to the ignored
 | --- | --- |
 | [chimes_tables.py](chimes_tables.py), [chimes_panel.py](chimes_panel.py) | Generate Chimes' `tables.h` and `panel.svg.fragment`; CI checks they are current |
 | [clouds_tables.py](clouds_tables.py) | Generates the `tables.h` of the machines after Clouds, Stratus and Cirrus; CI checks they are current |
+| [clouds_panels.py](clouds_panels.py) | Generates the `panel.svg.fragment` of Stratus and Cirrus, the SDK's two-page header first; CI checks they are current |
 | [reference/](reference) | Builds the upstream float code and the machine on the host, and compares them |
 | [blackfin_loops.py](blackfin_loops.py) | Counts the Blackfin instructions in a machine's loops (synth, effect or sample engine), from the pinned compiler |
 | [host/sdk_cxx14.py](host/sdk_cxx14.py) | `sdk.py test` with C++14 host compiles, for clang++ on Windows |

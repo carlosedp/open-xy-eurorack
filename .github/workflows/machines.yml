@@ -45,6 +45,8 @@ jobs:
             mkdir -p "$RUNNER_TEMP/$machine"
             python machines/tools/clouds_tables.py "$RUNNER_TEMP/$machine/tables.h"
             diff -u "machines/machines/$machine/tables.h" "$RUNNER_TEMP/$machine/tables.h"
+            python machines/tools/clouds_panels.py $machine "$RUNNER_TEMP/$machine/panel.svg.fragment"
+            diff -u "machines/machines/$machine/panel.svg.fragment" "$RUNNER_TEMP/$machine/panel.svg.fragment"
           done
       - name: Machine checks
         shell: bash

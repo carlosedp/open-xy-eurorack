@@ -65,8 +65,8 @@ inline i32 balance(i32 x) {
     return x >= kMaximum / 4 ? kMaximum : x <= -kMaximum / 4 ? -kMaximum : x * 4;
 }
 
-// Clouds' knobs from the controls. Feedback rests at 0: its encoder press is
-// the stock mixer's Dry.
+// Clouds' knobs from the controls, and Freeze from the shift row: its second
+// choice, on, is a word above half scale, as Clouds reads its switch.
 void process(State& state, opxy::Buffer buffer, opxy::Channel left, opxy::Channel right,
              opxy::Parameters parameters) {
     i32 knobs[kKnobs];
@@ -76,7 +76,7 @@ void process(State& state, opxy::Buffer buffer, opxy::Channel left, opxy::Channe
     knobs[kDensity] = parameters[kControlDensity];
     knobs[kFreeze] = parameters[kControlFreeze];
     knobs[kTexture] = parameters[kControlTexture];
-    knobs[kFeedback] = 0;
+    knobs[kFeedback] = parameters[kControlFeedback];
     knobs[kReverbAmount] = parameters[kControlReverb];
     render(state, buffer, left, right, knobs);
     for (u32 i = 0; i < opxy::block_frames; ++i) {
