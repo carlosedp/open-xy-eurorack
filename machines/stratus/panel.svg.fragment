@@ -25,37 +25,214 @@
 <text id="stratus_text_13" transform="matrix(1 0 0 1 185 33)" fill="#707070" font-family="UniversNextPro-Light" font-size="13px">-</text>
 <text id="stratus_text_14" transform="matrix(1 0 0 1 305 33)" fill="#707070" font-family="UniversNextPro-Light" font-size="13px">-</text>
 <text id="stratus_text_15" transform="matrix(1 0 0 1 425 33)" fill="#707070" font-family="UniversNextPro-Light" font-size="13px">-</text>
-  <!-- A second of the recording, now at its right end. -->
-  <path id="stratus_node_8" transform="matrix(1 0 0 1 0 0)" d="M40 100 L440 100 L440 150 L40 150 Z" fill="none" stroke="#4A4A4A" stroke-width="1"/>
-  <!-- Where Position starts the grains: a notch above the recording. -->
-  <path id="stratus_node_9" transform="matrix(1 0 0 1 640 120)" d="M-5 -6 L5 -6 L0 0 Z" fill="#9A9A9A" stroke="#9A9A9A" stroke-width="0.5"/>
-  <!-- The grains. -->
-  <circle id="stratus_node_10" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_11" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_12" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_13" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_14" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_15" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_16" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_17" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_18" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_19" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_20" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_21" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_22" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_23" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_24" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_25" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_26" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_27" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_28" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_29" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_30" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_31" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_32" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
-  <circle id="stratus_node_33" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <!-- Opaque below the header. -->
+  <path d="M0,38 L480,38 L480,220 L0,220 Z" fill="#000000"/>
+  <!-- A second of the recording as a tape, now at its right end. -->
+  <path id="stratus_node_8" transform="matrix(1 0 0 1 0 0)" d="M40 55 L440 55 L440 205 L40 205 Z" fill="none" stroke="#555555" stroke-width="1"/>
+  <!-- The tape's bars, standing for the send as it is recorded. -->
+  <path id="stratus_node_9" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_10" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_11" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_12" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_13" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_14" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_15" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_16" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_17" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_18" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_19" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_20" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_21" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_22" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_23" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_24" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_25" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_26" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_27" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_28" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_29" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_30" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_31" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_32" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_33" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_34" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_35" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_36" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_37" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_38" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_39" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_40" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_41" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_42" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_43" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_44" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_45" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_46" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_47" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_48" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_49" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_50" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_51" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_52" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_53" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_54" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_55" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_56" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_57" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_58" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_59" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_60" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_61" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_62" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_63" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_64" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_65" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_66" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_67" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_68" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_69" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_70" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_71" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_72" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_73" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_74" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_75" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_76" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_77" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_78" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_79" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_80" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_81" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_82" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_83" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_84" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_85" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_86" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_87" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_88" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_89" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_90" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_91" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_92" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_93" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_94" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_95" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_96" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_97" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_98" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_99" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_100" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_101" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_102" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_103" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <path id="stratus_node_104" transform="matrix(1 0 0 1 640 120)" d="M-1.2 -75 L1.2 -75 L1.2 75 L-1.2 75 Z" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="0.5"/>
+  <!-- The record head. -->
+  <path id="stratus_node_105" transform="matrix(1 0 0 1 640 120)" d="M-0.75 -80 L0.75 -80 L0.75 80 L-0.75 80 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <!-- Where Position starts the grains: a notch above the tape. -->
+  <path id="stratus_node_106" transform="matrix(1 0 0 1 640 120)" d="M-5 -6 L5 -6 L0 0 Z" fill="#D2D2D2" stroke="#D2D2D2" stroke-width="0.5"/>
+  <!-- Reverb's halos, the grains' trails and the grains. -->
+  <circle id="stratus_node_107" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_108" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_109" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_110" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_111" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_112" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_113" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_114" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_115" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_116" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_117" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_118" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_119" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_120" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_121" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_122" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_123" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_124" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_125" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_126" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_127" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_128" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_129" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_130" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#262626" stroke="#262626" stroke-width="0.5"/>
+  <circle id="stratus_node_131" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_132" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_133" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_134" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_135" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_136" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_137" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_138" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_139" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_140" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_141" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_142" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_143" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_144" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_145" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_146" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_147" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_148" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_149" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_150" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_151" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_152" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_153" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_154" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_155" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_156" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_157" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_158" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_159" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_160" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_161" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_162" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_163" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_164" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_165" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_166" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_167" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_168" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_169" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_170" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_171" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_172" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_173" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_174" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_175" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_176" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_177" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_178" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#555555" stroke="#555555" stroke-width="0.5"/>
+  <circle id="stratus_node_179" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_180" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_181" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_182" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_183" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_184" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_185" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_186" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_187" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_188" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_189" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_190" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_191" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_192" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_193" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_194" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_195" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_196" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_197" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_198" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_199" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_200" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_201" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  <circle id="stratus_node_202" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
   <!-- Palette entries, parked off screen. -->
-  <circle id="stratus_palette_0" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="1" fill="#4A4A4A" stroke="#4A4A4A" stroke-width="1"/>
-  <circle id="stratus_palette_1" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="1" fill="#9A9A9A" stroke="#9A9A9A" stroke-width="1"/>
-  <circle id="stratus_palette_2" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="1" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="1"/>
+  <circle id="stratus_palette_0" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="1" fill="#262626" stroke="#262626" stroke-width="1"/>
+  <circle id="stratus_palette_1" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="1" fill="#3A3A3A" stroke="#3A3A3A" stroke-width="1"/>
+  <circle id="stratus_palette_2" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="1" fill="#555555" stroke="#555555" stroke-width="1"/>
+  <circle id="stratus_palette_3" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="1" fill="#7A7A7A" stroke="#7A7A7A" stroke-width="1"/>
+  <circle id="stratus_palette_4" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="1" fill="#A6A6A6" stroke="#A6A6A6" stroke-width="1"/>
+  <circle id="stratus_palette_5" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="1" fill="#D2D2D2" stroke="#D2D2D2" stroke-width="1"/>
+  <circle id="stratus_palette_6" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="1" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1"/>
 </g>

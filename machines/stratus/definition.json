@@ -24,5 +24,5 @@
     "Wash": {"position": 0.6060606060606061, "size": 0.8080808080808081, "pitch": 0.5050505050505051, "density": 0.9090909090909091, "feedback": 0.5050505050505051, "texture": 0.9595959595959596, "dry": 0.0, "reverb": 0.8080808080808081},
     "Crackle": {"position": 0.20202020202020202, "size": 0.25252525252525254, "pitch": 0.5050505050505051, "density": 1.0, "feedback": 0.0, "texture": 0.10101010101010101, "dry": 0.0, "reverb": 0.20202020202020202}
   },
-  "resources": {"bufferBytes": 465748, "display": {"stateBytes": 516, "stateAlignment": 4, "paths": 0, "points": 0, "nodes": 34, "texts": 16, "palette": 3}}
+  "resources": {"bufferBytes": 465748, "display": {"stateBytes": 916, "stateAlignment": 4, "paths": 0, "points": 0, "nodes": 203, "texts": 16, "palette": 7}}
 }

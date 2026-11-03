@@ -29,13 +29,17 @@ Octave Down, Wash and Crackle.
 
 Stratus draws its own send page: the SDK's two-row header, the page the
 encoders edit large and bright and the other small and grey, and while Shift
-is held, Freeze in the edited row. Below it, a second of the recording, now at
-its right end, with a notch where Position starts the grains. The grains
-appear there as Density schedules them, swell and fade over the life Size gives
-them, and drift as their Pitch reads the recording against the record head:
-toward now when pitched up, away when down, and on through a frozen recording,
-which lights up. The page runs apart from the audio, so these are the
-controls' grains, not the voices' own.
+is held, Freeze in the edited row. Below it, a second of the recording as a
+tape, now at its right end, where a blinking record head writes. The page
+cannot hear the send, so the tape's bars stand for it: they arrive at the head
+and move left as the recording does, and stop and light up when it is frozen.
+A notch marks where Position starts the grains; they appear there as Density
+schedules them, glow and swell with their window as Texture shapes it, light
+the bar they read and trail dots along it, and drift as their Pitch reads
+against the record head: toward now when pitched up, away when down, and on
+through a frozen recording. Feedback writes their light back into the tape,
+taller and brighter, and Reverb gives them halos that linger after them. These
+are the controls' grains, not Clouds' own.
 
 ```sh
 python ../open-xy/sdk.py test --machine machines/stratus

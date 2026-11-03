@@ -6,8 +6,7 @@
 import argparse
 from pathlib import Path
 
-PALETTE = ['#4A4A4A', '#9A9A9A', '#F0F0F0']  # Stratus: dim, mid and bright
-# Cirrus' shades, darkest to brightest: display.cpp's Shade.
+# Both machines' shades, darkest to brightest: display.cpp's Shade.
 SHADES = ['#262626', '#3A3A3A', '#555555', '#7A7A7A', '#A6A6A6', '#D2D2D2', '#FFFFFF']
 PARKED = 'matrix(1 0 0 1 640 120)'           # off screen until a frame places it
 
@@ -36,17 +35,27 @@ def palette(machine, colours):
 
 
 def stratus(sdk):
-    # display.cpp: nodes 0..7 the header, 8 the recording (40..440 by 100..150),
-    # 9 Position's marker, 10..33 the grains.
+    # display.cpp's nodes: 0..7 the header, then in drawing order 8 the tape
+    # (40..440 by 55..205), 9..104 its bars, 105 the record head, 106 Position's
+    # marker, 107..130 the grains' halos, 131..178 two trail dots behind each
+    # grain, 179..202 the grains.
     return ['<g id="stratus_panel">', header(sdk, 'stratus', 0),
-            '  <!-- A second of the recording, now at its right end. -->',
-            f'  <path id="stratus_node_8" transform="matrix(1 0 0 1 0 0)" d="M40 100 L440 100 L440 150 L40 150 Z" '
-            f'fill="none" stroke="{PALETTE[0]}" stroke-width="1"/>',
-            '  <!-- Where Position starts the grains: a notch above the recording. -->',
-            f'  <path id="stratus_node_9" transform="{PARKED}" d="M-5 -6 L5 -6 L0 0 Z" '
-            f'fill="{PALETTE[1]}" stroke="{PALETTE[1]}" stroke-width="0.5"/>',
-            '  <!-- The grains. -->', *circles('stratus', 10, 24, 4, PALETTE[2]),
-            '  <!-- Palette entries, parked off screen. -->', *palette('stratus', PALETTE), '</g>']
+            '  <!-- Opaque below the header. -->',
+            '  <path d="M0,38 L480,38 L480,220 L0,220 Z" fill="#000000"/>',
+            '  <!-- A second of the recording as a tape, now at its right end. -->',
+            f'  <path id="stratus_node_8" transform="matrix(1 0 0 1 0 0)" d="M40 55 L440 55 L440 205 L40 205 Z" '
+            f'fill="none" stroke="{SHADES[2]}" stroke-width="1"/>',
+            "  <!-- The tape's bars, standing for the send as it is recorded. -->",
+            *bars('stratus', 9, 96, 1.2, 75, SHADES[1]),
+            '  <!-- The record head. -->',
+            *bars('stratus', 105, 1, 0.75, 80, SHADES[6]),
+            '  <!-- Where Position starts the grains: a notch above the tape. -->',
+            f'  <path id="stratus_node_106" transform="{PARKED}" d="M-5 -6 L5 -6 L0 0 Z" '
+            f'fill="{SHADES[5]}" stroke="{SHADES[5]}" stroke-width="0.5"/>',
+            "  <!-- Reverb's halos, the grains' trails and the grains. -->",
+            *circles('stratus', 107, 24, 8, SHADES[0]), *circles('stratus', 131, 48, 8, SHADES[2]),
+            *circles('stratus', 179, 24, 8, SHADES[6]),
+            '  <!-- Palette entries, parked off screen. -->', *palette('stratus', SHADES), '</g>']
 
 
 def cirrus(sdk):
