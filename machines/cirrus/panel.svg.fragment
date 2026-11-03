@@ -1,0 +1,59 @@
+<g id="cirrus_panel">
+<!-- SDK two-page header: keep this block before machine artwork below y=38. -->
+<path d="M0,0 L480,0 L480,38 L0,38 Z" fill="#000000"/>
+<path id="cirrus_node_4" transform="matrix(1 0 0 1 0 0)" d="M0,0 L60,0 L60,20 L0,20 Z" fill="#000000" stroke="#000000" stroke-width="0.5"/>
+<path id="cirrus_node_5" transform="matrix(1 0 0 1 60 0)" d="M0,0 L60,0 L60,20 L0,20 Z" fill="#323232" stroke="#323232" stroke-width="0.5"/>
+<path id="cirrus_node_6" transform="matrix(1 0 0 1 120 0)" d="M0,0 L60,0 L60,20 L0,20 Z" fill="#4B4B4B" stroke="#4B4B4B" stroke-width="0.5"/>
+<path id="cirrus_node_7" transform="matrix(1 0 0 1 180 0)" d="M0,0 L60,0 L60,20 L0,20 Z" fill="#646464" stroke="#646464" stroke-width="0.5"/>
+<path id="cirrus_node_8" transform="matrix(1 0 0 1 240 0)" d="M0,0 L60,0 L60,20 L0,20 Z" fill="#7D7D7D" stroke="#7D7D7D" stroke-width="0.5"/>
+<path id="cirrus_node_9" transform="matrix(1 0 0 1 300 0)" d="M0,0 L60,0 L60,20 L0,20 Z" fill="#969696" stroke="#969696" stroke-width="0.5"/>
+<path id="cirrus_node_10" transform="matrix(1 0 0 1 360 0)" d="M0,0 L60,0 L60,20 L0,20 Z" fill="#AFAFAF" stroke="#AFAFAF" stroke-width="0.5"/>
+<path id="cirrus_node_11" transform="matrix(1 0 0 1 420 0)" d="M0,0 L60,0 L60,20 L0,20 Z" fill="#CDCDCD" stroke="#CDCDCD" stroke-width="0.5"/>
+<text id="cirrus_text_0" transform="matrix(1 0 0 1 5 10)" fill="#CBCBCB" font-family="UniversNextPro-Light" font-size="10px">-</text>
+<text id="cirrus_text_1" transform="matrix(1 0 0 1 125 10)" fill="#CBCBCB" font-family="UniversNextPro-Light" font-size="10px">-</text>
+<text id="cirrus_text_2" transform="matrix(1 0 0 1 245 10)" fill="#000000" font-family="UniversNextPro-Light" font-size="10px">-</text>
+<text id="cirrus_text_3" transform="matrix(1 0 0 1 365 10)" fill="#000000" font-family="UniversNextPro-Light" font-size="10px">-</text>
+<text id="cirrus_text_4" transform="matrix(1 0 0 1 65 17.4)" fill="#CBCBCB" font-family="UniversNextPro-Light" font-size="20px">-</text>
+<text id="cirrus_text_5" transform="matrix(1 0 0 1 185 17.4)" fill="#CBCBCB" font-family="UniversNextPro-Light" font-size="20px">-</text>
+<text id="cirrus_text_6" transform="matrix(1 0 0 1 305 17.4)" fill="#000000" font-family="UniversNextPro-Light" font-size="20px">-</text>
+<text id="cirrus_text_7" transform="matrix(1 0 0 1 425 17.4)" fill="#000000" font-family="UniversNextPro-Light" font-size="20px">-</text>
+<text id="cirrus_text_8" transform="matrix(1 0 0 1 5 33)" fill="#5A5A5A" font-family="UniversNextPro-Light" font-size="10px">-</text>
+<text id="cirrus_text_9" transform="matrix(1 0 0 1 125 33)" fill="#5A5A5A" font-family="UniversNextPro-Light" font-size="10px">-</text>
+<text id="cirrus_text_10" transform="matrix(1 0 0 1 245 33)" fill="#5A5A5A" font-family="UniversNextPro-Light" font-size="10px">-</text>
+<text id="cirrus_text_11" transform="matrix(1 0 0 1 365 33)" fill="#5A5A5A" font-family="UniversNextPro-Light" font-size="10px">-</text>
+<text id="cirrus_text_12" transform="matrix(1 0 0 1 65 33)" fill="#707070" font-family="UniversNextPro-Light" font-size="13px">-</text>
+<text id="cirrus_text_13" transform="matrix(1 0 0 1 185 33)" fill="#707070" font-family="UniversNextPro-Light" font-size="13px">-</text>
+<text id="cirrus_text_14" transform="matrix(1 0 0 1 305 33)" fill="#707070" font-family="UniversNextPro-Light" font-size="13px">-</text>
+<text id="cirrus_text_15" transform="matrix(1 0 0 1 425 33)" fill="#707070" font-family="UniversNextPro-Light" font-size="13px">-</text>
+  <!-- The sample, in four outlines of 25 of its 96 bins each (paths 0 to 3), at rest flat,
+       each about its own centre, as display.cpp draws them. -->
+  <path id="cirrus_node_0" transform="matrix(1 0 0 1 90.5263 125)" d="M-50.5263 -1 L-46.3158 -1 L-42.1053 -1 L-37.8947 -1 L-33.6842 -1 L-29.4737 -1 L-25.2632 -1 L-21.0526 -1 L-16.8421 -1 L-12.6316 -1 L-8.4211 -1 L-4.2105 -1 L0 -1 L4.2105 -1 L8.4211 -1 L12.6316 -1 L16.8421 -1 L21.0526 -1 L25.2632 -1 L29.4737 -1 L33.6842 -1 L37.8947 -1 L42.1053 -1 L46.3158 -1 L50.5263 -1 L50.5273 1 L46.3168 1 L42.1063 1 L37.8957 1 L33.6852 1 L29.4747 1 L25.2642 1 L21.0536 1 L16.8431 1 L12.6326 1 L8.4221 1 L4.2115 1 L0.001 1 L-4.2095 1 L-8.4201 1 L-12.6306 1 L-16.8411 1 L-21.0516 1 L-25.2622 1 L-29.4727 1 L-33.6832 1 L-37.8937 1 L-42.1043 1 L-46.3148 1 L-50.5253 1 Z" fill="none" stroke="#9A9A9A" stroke-width="1"/>
+  <path id="cirrus_node_1" transform="matrix(1 0 0 1 191.5789 125)" d="M-50.5263 -1 L-46.3158 -1 L-42.1053 -1 L-37.8947 -1 L-33.6842 -1 L-29.4737 -1 L-25.2632 -1 L-21.0526 -1 L-16.8421 -1 L-12.6316 -1 L-8.4211 -1 L-4.2105 -1 L0 -1 L4.2105 -1 L8.4211 -1 L12.6316 -1 L16.8421 -1 L21.0526 -1 L25.2632 -1 L29.4737 -1 L33.6842 -1 L37.8947 -1 L42.1053 -1 L46.3158 -1 L50.5263 -1 L50.5273 1 L46.3168 1 L42.1063 1 L37.8957 1 L33.6852 1 L29.4747 1 L25.2642 1 L21.0536 1 L16.8431 1 L12.6326 1 L8.4221 1 L4.2115 1 L0.001 1 L-4.2095 1 L-8.4201 1 L-12.6306 1 L-16.8411 1 L-21.0516 1 L-25.2622 1 L-29.4727 1 L-33.6832 1 L-37.8937 1 L-42.1043 1 L-46.3148 1 L-50.5253 1 Z" fill="none" stroke="#9A9A9A" stroke-width="1"/>
+  <path id="cirrus_node_2" transform="matrix(1 0 0 1 292.6316 125)" d="M-50.5263 -1 L-46.3158 -1 L-42.1053 -1 L-37.8947 -1 L-33.6842 -1 L-29.4737 -1 L-25.2632 -1 L-21.0526 -1 L-16.8421 -1 L-12.6316 -1 L-8.4211 -1 L-4.2105 -1 L0 -1 L4.2105 -1 L8.4211 -1 L12.6316 -1 L16.8421 -1 L21.0526 -1 L25.2632 -1 L29.4737 -1 L33.6842 -1 L37.8947 -1 L42.1053 -1 L46.3158 -1 L50.5263 -1 L50.5273 1 L46.3168 1 L42.1063 1 L37.8957 1 L33.6852 1 L29.4747 1 L25.2642 1 L21.0536 1 L16.8431 1 L12.6326 1 L8.4221 1 L4.2115 1 L0.001 1 L-4.2095 1 L-8.4201 1 L-12.6306 1 L-16.8411 1 L-21.0516 1 L-25.2622 1 L-29.4727 1 L-33.6832 1 L-37.8937 1 L-42.1043 1 L-46.3148 1 L-50.5253 1 Z" fill="none" stroke="#9A9A9A" stroke-width="1"/>
+  <path id="cirrus_node_3" transform="matrix(1 0 0 1 393.6842 125)" d="M-50.5263 -1 L-46.3158 -1 L-42.1053 -1 L-37.8947 -1 L-33.6842 -1 L-29.4737 -1 L-25.2632 -1 L-21.0526 -1 L-16.8421 -1 L-12.6316 -1 L-8.4211 -1 L-4.2105 -1 L0 -1 L4.2105 -1 L8.4211 -1 L12.6316 -1 L16.8421 -1 L21.0526 -1 L25.2632 -1 L29.4737 -1 L33.6842 -1 L37.8947 -1 L42.1053 -1 L46.3158 -1 L50.5263 -1 L50.5273 1 L46.3168 1 L42.1063 1 L37.8957 1 L33.6852 1 L29.4747 1 L25.2642 1 L21.0536 1 L16.8431 1 L12.6326 1 L8.4221 1 L4.2115 1 L0.001 1 L-4.2095 1 L-8.4201 1 L-12.6306 1 L-16.8411 1 L-21.0516 1 L-25.2622 1 L-29.4727 1 L-33.6832 1 L-37.8937 1 L-42.1043 1 L-46.3148 1 L-50.5253 1 Z" fill="none" stroke="#9A9A9A" stroke-width="1"/>
+  <!-- Where the scan starts the grains: a line across the sample. -->
+  <path id="cirrus_node_12" transform="matrix(1 0 0 1 640 120)" d="M-0.5 -32 L0.5 -32 L0.5 32 L-0.5 32 Z" fill="#9A9A9A" stroke="#9A9A9A" stroke-width="0.5"/>
+  <!-- The grains. -->
+  <circle id="cirrus_node_13" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <circle id="cirrus_node_14" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <circle id="cirrus_node_15" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <circle id="cirrus_node_16" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <circle id="cirrus_node_17" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <circle id="cirrus_node_18" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <circle id="cirrus_node_19" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <circle id="cirrus_node_20" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <circle id="cirrus_node_21" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <circle id="cirrus_node_22" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <circle id="cirrus_node_23" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <circle id="cirrus_node_24" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <circle id="cirrus_node_25" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <circle id="cirrus_node_26" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <circle id="cirrus_node_27" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <circle id="cirrus_node_28" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="4" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <!-- Shown while the track has no sample. -->
+  <text id="cirrus_text_16" transform="matrix(1 0 0 1 200 128)" fill="#9A9A9A" font-family="UniversNextPro-Light" font-size="13px">-</text>
+  <!-- Palette entries, parked off screen. -->
+  <circle id="cirrus_palette_0" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="1" fill="#4A4A4A" stroke="#4A4A4A" stroke-width="1"/>
+  <circle id="cirrus_palette_1" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="1" fill="#9A9A9A" stroke="#9A9A9A" stroke-width="1"/>
+  <circle id="cirrus_palette_2" transform="matrix(1 0 0 1 640 120)" cx="0" cy="0" r="1" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="1"/>
+</g>

@@ -1,8 +1,8 @@
 # Cirrus
 
 A granular sample instrument after Mutable Instruments Clouds, by Emilie
-Gillet, rebuilt in fixed point for the OP-XY. Load a sample on the stock
-sampler page; each note then plays it as Clouds plays its recording: in grains,
+Gillet, rebuilt in fixed point for the OP-XY. Load a sample with the stock
+sample browser or recorder; each note then plays it as Clouds plays its recording: in grains,
 scattered, pitched and spread across the stereo field, at the note's pitch.
 Where Clouds' recording moves on with the input, Cirrus' grains move through
 the sample at Speed. The [licence](vendor/LICENSE) and
@@ -12,7 +12,8 @@ It is Clouds' granular player at its 16-bit quality: in stereo for a stereo
 sample, in mono for a mono one. Clouds' feedback, diffuser and reverb belong to
 an effect: send the track to [Stratus](../stratus) for them.
 
-Four controls, and three more on Shift:
+Seven controls on two pages of four, as on a synth's page: a press of any
+encoder switches pages, and Texture is on both, at encoder 4:
 
 | Control | Clouds' | Does |
 | --- | --- | --- |
@@ -27,6 +28,15 @@ Four controls, and three more on Shift:
 Positions are 99ths of the control's travel. Presets: Cloud, Stretch,
 Stutter, Octave Down, Frozen and Rewind.
 
+Cirrus draws its own screen over the stock sampler's page: the SDK's two-row
+header, the page the encoders edit large and bright and the other small and
+grey, over the track's sample as a waveform. While notes are held, a line
+shows where the scan starts the grains, Position into the trim and moving on
+at Speed from each note, and the grains appear there as Density schedules
+them, swell and fade over the life Size gives them, and read on at their
+Pitch. The screen runs apart from the audio, so these are the controls'
+grains, not the voices' own. Without a sample it asks for one.
+
 ## Playing it
 
 - **Pitch.** Middle C plays the sample at its own pitch and speed, as the
@@ -36,8 +46,10 @@ Stutter, Octave Down, Frozen and Rewind.
 - **A note starts a grain at once**, as Clouds' trigger input does, and plays
   from Position again. At Density 50 that grain is all a note plays.
 - **The sample's trim** bounds the grains: they start, and end, inside it.
-  Its reverse setting is not used; Speed below 50 plays through it backward.
-  A trim shorter than 128 frames plays nothing.
+  Cirrus' screen takes over the sampler page's encoders, so the trim is the
+  whole sample when one is newly loaded, or what a preset or the stock sampler
+  left on the track. Its reverse setting is not used; Speed below 50 plays
+  through it backward. A trim shorter than 128 frames plays nothing.
 - **Level.** The pad's level scales the output. A sample at full scale plays
   at most at half the OP-XY's full scale, Clouds' own full scale.
 - **Each note scatters its grains its own way**, so the notes of a chord do
@@ -53,10 +65,11 @@ is how the sound is checked against Clouds.
 
 | File | Owns |
 | --- | --- |
-| [definition.json](definition.json), [machine.json](machine.json) | Controls, presets, stereo output, SDK version and identity |
+| [definition.json](definition.json), [machine.json](machine.json) | Controls, presets, stereo output, the screen, SDK version and the sampler it forks |
 | [core.h](core.h) | A voice's state: its sample, its grains and their scheduler |
 | [granular.h](granular.h) | Clouds' grains: the controls, scheduling, the envelope, reading the sample and the normalization |
 | [sample.cpp](sample.cpp) | The callbacks: a voice for a sample, a note, a block of output |
+| [display.h](display.h), [display.cpp](display.cpp), [panel.svg.fragment](panel.svg.fragment) | The screen, its state and its artwork, from [tools/clouds_panels.py](../../tools/clouds_panels.py) |
 | [fixed.h](fixed.h), [tables.h](tables.h) | Fixed-point arithmetic and Clouds' lookup tables |
 | [tests/sound.cpp](tests/sound.cpp) | Sound checks: silence without a sample or room for a grain, pitch by note, tuning, sample rate and Pitch, the note's grain, Position, Speed forward, still and back, Spread for mono and stereo samples, each note's own scattering, noise keeping its spectrum, the pad's level and half scale, silence without an offset |
 
@@ -109,10 +122,3 @@ and 24,000. Each note is a voice: chords add up. These are instructions, not
 cycles, from counting the compiled loops. On an OP-XY, the SDK's hardware
 benchmark (`opxy-sample-callback-v1`: one note of a two-second mono sample at
 the defaults) measured 4.6% of the block, the median of three runs.
-
-## On the device, still to check
-
-- How stock sample page 2 shows Cirrus' controls, and what its trim markers do.
-- The CPU of a chord, against the stock sampler's voices.
-- Sample engines draw no screen of their own. The grains are to show once the
-  SDK lets a sample engine draw over the stock page.
