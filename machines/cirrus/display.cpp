@@ -31,14 +31,15 @@ const u32 kBinsPerPath = 24;                                           // and on
 const i32 kPulse = 256;                                                // a note's pulse, Q10 seconds
 // How long a released note's playhead and grains ring on, fading, while the
 // amp envelope's release goes on sounding: from its Release, along a curve
-// that rises 11 octaves from 5 ms (a guess at stock's own, which maps its
-// control positions to times), or 3 s when the envelope cannot be read. On the
+// that rises 12.55 octaves from 5 ms to the 30 s the longest release rings on
+// an OP-XY (stock maps its control positions to times along its own curve;
+// this matches its ends), or 3 s when the envelope cannot be read. On the
 // OP-XY the word falls as the release lengthens: a long release reads near 0.
 inline i32 tail_of(const draw::Input& input) {
     if (!draw::envelope_known(input.amp)) return 3 * 1024;              // Q10 seconds
     const i32 length = kMaximum - input.amp.release;                    // 0 for the shortest release
-    const u32 rising = exp2(mul31(length, 11 << 16), 8);                // 2^(11 length), Q8
-    return clamp(static_cast<i32>(rising * 5 >> 8), 64, 12 * 1024);     // 5 ms x that, Q10 seconds
+    const u32 rising = exp2(mul31(length, 822477), 8);                  // 2^(12.55 length), Q8
+    return clamp(static_cast<i32>(rising * 5 >> 8), 64, 32 * 1024);     // 5 ms x that, Q10 seconds
 }
 // The palette, darkest to brightest (tools/clouds_panels.py).
 enum Shade : u32 { kFaint, kDim, kLow, kMid, kHigh, kBright, kWhite };

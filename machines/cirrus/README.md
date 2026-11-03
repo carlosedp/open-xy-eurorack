@@ -42,8 +42,9 @@ grey, over the track's sample as a dim waveform, covering the stock page beneath
 every note's scan starts, Position into the trim. Each held note, up to four,
 has a bright playhead that pulses as its note starts and moves on from there
 at Speed; released, it rings on with its grains, dimmer and fading, for as long
-as the amp envelope's Release (on a curve guessed at stock's: 5 ms at 0, 2 s
-near 80, 10 s at 99), or three seconds where the envelope cannot be read.
+as the amp envelope's Release: 5 ms at the shortest to 30 s at the longest,
+as an OP-XY rings, along an exponential curve between (stock's own between
+them is not known), or three seconds where the envelope cannot be read.
 Its grains appear there as Density schedules them and are the screen's
 foreground: each glows and swells with its window, as Texture shapes it, sits
 higher or lower as Spread pans it, left above and right below, and reads on at
