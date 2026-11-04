@@ -226,14 +226,40 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
     const u32 region = end - begin < kFrames ? end - begin : kFrames - 1;  // as the voices read it
     const i32 dt = input.reduced_motion ? 0 : draw::clamp(input.elapsed, 0, 102);
 
+    // Clouds' grains: a voice renders up to kGrains of them, each at its own pan.
+    const i32 life = clamp(mul31(lookup(kGrainSize, c.size), 194783), 8, 1024);  // samples / 256 / 44100 x 1024
+    const i32 overlap_grains = c.overlap > 0 ? 1 + mul31(c.overlap, static_cast<i32>(kMaxGrains) - 1) : 0;
+    const i32 grains = overlap_grains < static_cast<i32>(kGrains) ? overlap_grains : static_cast<i32>(kGrains);
+    // A grain reads on at its Pitch against the sample's own rate, frames a
+    // second, back when the region plays reversed; Jitter spreads it, as each
+    // voice's grains are detuned.
+    // A grain shorter than a few frames would be drawn at whatever point of its
+    // window a frame lands on, big and bright at some sizes and faint at
+    // others: on screen it lives at least kShortestShown, its window spread
+    // over that, and its peak size follows its real length.
+    const i32 shown = life > kShortestShown ? life : kShortestShown;
+    const i32 peak = unit * 2 / 5 + unit * 3 / 5 * (life < 512 ? life : 512) / 512;  // its largest scale
+    const u32 ratio = exp2(octaves(c.semitones), 16);  // Q16
+    const i32 reading = static_cast<i32>(multiply_shift(ratio, rate, 16));
+    // Its window as the voices shape it (start_grain), for its glow.
+    const bool smooth = c.window_shape >= 1 << 30;
+    const i32 smoothness = smooth ? (c.window_shape - (1 << 30)) >> 15 : 0;
+    const i32 slope = smooth ? 0 : static_cast<i32>(reciprocal(static_cast<u32>(c.window_shape + 21474836), 40));
+
     // Each held note plays from Position again, its scan moving on at Speed, a
-    // share of the sample's own rate, and wrapping within the trim: a playhead
+    // share of the sample's own rate, and wrapping within the grains' room: a playhead
     // for each, up to four. As notes are released the oldest let go and fade
     // over the envelope's release; a new note takes a free playhead, else the
     // longest released, else the oldest.
     const i32 per_second = mul31(clamp(c.speed, -65535, 65535) << 15, static_cast<i32>(rate));  // frames
     const i32 span = static_cast<i32>(region << 8);                                              // Q8 frames
-    const u32 origin = multiply_shift(region << 8, static_cast<u32>(c.position) << 1, 32);        // Q8 frames
+    // A grain starts where schedule() starts it: Position places it in the
+    // room the grain's own reading leaves, so it never reads past the trim,
+    // and the scan moves it on from there, wrapping within that room.
+    const u32 eaten = static_cast<u32>(reading / 4) * static_cast<u32>(life);  // Q8 frames a grain reads
+    const u32 room = region > kMargin ? (region - kMargin) << 8 : 256;
+    const u32 available = eaten + 256 < room ? room - eaten : 256;
+    const u32 origin = multiply_shift(available, static_cast<u32>(c.position) << 1, 32);        // Q8 frames
     const i32 tail = tail_of(input);
     u32 started = input.note_serial - state.serial;
     if (started > kPlayheads) started = kPlayheads;
@@ -272,26 +298,6 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
         --held;
     }
 
-    // Clouds' grains: a voice renders up to kGrains of them, each at its own pan.
-    const i32 life = clamp(mul31(lookup(kGrainSize, c.size), 194783), 8, 1024);  // samples / 256 / 44100 x 1024
-    const i32 overlap_grains = c.overlap > 0 ? 1 + mul31(c.overlap, static_cast<i32>(kMaxGrains) - 1) : 0;
-    const i32 grains = overlap_grains < static_cast<i32>(kGrains) ? overlap_grains : static_cast<i32>(kGrains);
-    // A grain reads on at its Pitch against the sample's own rate, frames a
-    // second, back when the region plays reversed; Jitter spreads it, as each
-    // voice's grains are detuned.
-    // A grain shorter than a few frames would be drawn at whatever point of its
-    // window a frame lands on, big and bright at some sizes and faint at
-    // others: on screen it lives at least kShortestShown, its window spread
-    // over that, and its peak size follows its real length.
-    const i32 shown = life > kShortestShown ? life : kShortestShown;
-    const i32 peak = unit * 2 / 5 + unit * 3 / 5 * (life < 512 ? life : 512) / 512;  // its largest scale
-    const u32 ratio = exp2(octaves(c.semitones), 16);  // Q16
-    const i32 reading = static_cast<i32>(multiply_shift(ratio, rate, 16));
-    // Its window as the voices shape it (start_grain), for its glow.
-    const bool smooth = c.window_shape >= 1 << 30;
-    const i32 smoothness = smooth ? (c.window_shape - (1 << 30)) >> 15 : 0;
-    const i32 slope = smooth ? 0 : static_cast<i32>(reciprocal(static_cast<u32>(c.window_shape + 21474836), 40));
-
     for (u32 h = 0; h < kPlayheads; ++h) {
         Playhead& head = state.heads[h];
         if (head.active && head.released >= 0) {
@@ -305,7 +311,7 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
         const i32 level = head.released < 0 ? 32767 : (tail - head.released) * 32767 / tail;  // Q15
         head.scan = (head.scan + per_second * dt / 4) % span;  // Q8 frames: x 256 / 1024
         if (head.scan < 0) head.scan += span;
-        const u32 start = (origin + static_cast<u32>(head.scan)) % static_cast<u32>(span);
+        const u32 start = (origin + static_cast<u32>(head.scan)) % available;
         head.wait -= dt;
         // At Density's middle a note plays its own grain alone.
         const i32 count = grains ? grains : head.seeded ? 0 : 1;
@@ -318,8 +324,7 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
                 ShownGrain& g = state.grains[i];
                 if (g.life) continue;
                 // A reversed grain starts at the far end of what it reads.
-                const u32 eaten = static_cast<u32>(reading / 4) * static_cast<u32>(life);  // Q8 frames
-                g.frame = g.origin = c.reverse ? (start + eaten < static_cast<u32>(span) ? start + eaten : start) : start;
+                g.frame = g.origin = c.reverse ? start + eaten : start;
                 // Up is left, down is right: Spread pans each grain at random about the centre.
                 g.y = kMiddle * unit + mul31(mul31(c.spread, noise_of(state.seed)), (kHalfHeight - 8) * unit);
                 g.age = 0;
@@ -341,8 +346,13 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
     for (u32 i = 0; i < kShownGrains; ++i) {
         ShownGrain& g = state.grains[i];
         if (g.life) {
+            // It reads on from the frame after it appears, and only for as long
+            // as the voices' grain reads; a short grain shown for longer holds
+            // where it ended as it fades.
+            const i32 before = g.age;
             g.age += dt;
-            const u32 moved = static_cast<u32>(reading * dt / 4);
+            const i32 reads = before > 0 && before < life ? (life - before < dt ? life - before : dt) : 0;
+            const u32 moved = static_cast<u32>(reading * reads / 4);
             g.frame = c.reverse ? g.frame - moved : g.frame + moved;
             if (g.age >= g.life || g.frame >= static_cast<u32>(span)) g.life = 0;
         }

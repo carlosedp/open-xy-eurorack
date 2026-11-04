@@ -52,6 +52,9 @@ removes or alters something a person would check on the device updates its lines
       missing or drawn twice
 - [ ] Each held note, up to four, has its own playhead that pulses as the note starts; grains glow along
       it as Density schedules them
+- [ ] Each grain appears at its playhead and reads forward from it at the note's pitch, faster than the
+      playhead moves, for as long as Size makes it; at Position 99 and a large Size neither runs past the
+      trim's end; with the sample reversed on the stock sampler, grains read backward
 - [ ] Every key across the keyboard's octaves plays the grains at its pitch, middle C at the sample's own;
       releasing ends the note; no note gets stuck, also after long holds
 - [ ] Chords and fast repeated notes: every note sounds and ends, and the notes of a chord scatter apart
