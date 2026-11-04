@@ -30,8 +30,9 @@ Shift and the encoders edit the stock sampler's own settings for the track,
 as on its page: Shift + 1 the sample start, + 2 the sample end, + 3 both
 together, moving the window between them through the sample, and + 4 the gain.
 Stock saves them with the track; while Shift is held the header shows the
-start, the end and the window's length (the gain, which it cannot read, as
--), and the waveform always marks the start and end.
+start, the end and the window's length, and the gain in the stock sampler's
+steps, -30 to +20, 0 for a newly loaded sample. The waveform always marks the
+start and end, and grows and shrinks with the gain.
 
 Positions are 99ths of the control's travel. Presets: Cloud, Stretch,
 Stutter, Octave Down, Frozen and Rewind.

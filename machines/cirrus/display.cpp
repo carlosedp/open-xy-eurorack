@@ -87,17 +87,42 @@ inline i32 centre_of(u32 p) {
                                     static_cast<i32>(draw::overview_bins - 1);
 }
 
+// The sample's gain as the waveform's height, Q8: as tall as the sample at 0,
+// the gain of a newly assigned sample, and each of stock's steps (-30..+20)
+// taken as a decibel, which its range suggests; unity where it can't be read.
+const i32 kLowestGain = -30, kHighestGain = 20;
+const i32 kGainHeight[kHighestGain - kLowestGain + 1] = {
+    8, 9, 10, 11, 13, 14, 16, 18, 20, 23, 26, 29, 32, 36, 41, 46, 51, 57, 64, 72, 81, 91, 102, 114, 128,
+    144, 162, 181, 203, 228, 256, 287, 322, 362, 406, 455, 511, 573, 643, 722, 810, 908, 1019, 1144, 1283,
+    1440, 1615, 1812, 2033, 2282, 2560};
+inline i32 gain_scale(const draw::SampleOverview& o) {
+    if (o.gain == draw::gain_unavailable) return 256;
+    return kGainHeight[draw::clamp(o.gain, kLowestGain, kHighestGain) - kLowestGain];
+}
+// The gain as stock counts it: -30 to +20, a sign before any but 0.
+inline void gain_caption(char* out, i32 gain) {
+    if (gain < 0) { *out++ = '-'; gain = -gain; }
+    else if (gain > 0) *out++ = '+';
+    if (gain >= 10) *out++ = static_cast<char>('0' + gain / 10 % 10);
+    *out++ = static_cast<char>('0' + gain % 10);
+    *out = 0;
+}
+// A 16-bit overview value as the waveform draws it at that gain, within its height.
+inline i32 scaled(i32 value, i32 scale) {
+    return draw::clamp(value * scale / 256, -32768, 32767);
+}
+
 // The waveform: each path traces 25 bins along their highest values and back
 // along their lowest, at least a pixel apart so that every outline has area.
-inline void draw_wave(DisplayState& state, const draw::SampleOverview& o, Frame& frame) {
+inline void draw_wave(DisplayState& state, const draw::SampleOverview& o, Frame& frame, i32 scale) {
     for (u32 p = 0; p < Frame::path_count; ++p) {
         Frame::path_type& path = frame.paths[p];
         for (u32 i = 0; i <= kBinsPerPath; ++i) {
             const u32 bin = p * kBinsPerPath + i < draw::overview_bins ? p * kBinsPerPath + i : draw::overview_bins - 1;
             const i32 x = kLeft * draw::unit + static_cast<i32>(bin) * kWidth * draw::unit /
                                                    static_cast<i32>(draw::overview_bins - 1) - centre_of(p);
-            i32 top = -o.high[bin] * kHalfHeight * draw::unit / 32768;
-            i32 bottom = -o.low[bin] * kHalfHeight * draw::unit / 32768;
+            i32 top = -scaled(o.high[bin], scale) * kHalfHeight * draw::unit / 32768;
+            i32 bottom = -scaled(o.low[bin], scale) * kHalfHeight * draw::unit / 32768;
             if (bottom - top < draw::unit) {
                 const i32 middle = (top + bottom) / 2;
                 top = middle - draw::unit / 2;
@@ -111,6 +136,7 @@ inline void draw_wave(DisplayState& state, const draw::SampleOverview& o, Frame&
     }
     state.key = state.key % 0x7ffffffeu + 1;
     for (u32 p = 0; p < Frame::path_count; ++p) frame.paths[p].key = state.key;
+    state.scale = scale;
 }
 
 // Everything but the header and the message, out of sight.
@@ -125,7 +151,7 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
     // Spread and Jitter; all 0..99. While Shift is held the edited row shows
     // what Shift edits on the stock sampler: the start, the end and the window
     // they make, which Shift + 3 moves, as 0..99 of the sample, and its gain,
-    // which the screen cannot read.
+    // in stock's steps, which the waveform's height also follows.
     const draw::SampleOverview& o = *opxy_sample_overview();
     // The trim as the voices play it: the whole sample while the region's
     // record gives no markers yet, as SampleBlock.region does then.
@@ -147,7 +173,8 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
         place_caption(values[first], known ? begin : 0, known ? o.frames : 1);
         place_caption(values[first + 1], known ? end : 1, known ? o.frames : 1);
         place_caption(values[first + 2], known ? end - begin : 0, known ? o.frames : 1);
-        draw::copy(values[first + 3], draw::header_capacity, "-");  // the screen cannot read it
+        if (o.gain != draw::gain_unavailable) gain_caption(values[first + 3], o.gain);
+        else draw::copy(values[first + 3], draw::header_capacity, "-");  // no sample
     }
     draw::page_header(state.header, input, frame, titles, values, kFirstHeader);
 
@@ -168,14 +195,15 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
         // A frame applies whole or not at all, and an outline needs a key: until
         // the sample is ready the outlines are flat and hidden, so the header
         // and the message still show.
-        if (!frame.paths[0].key) draw_wave(state, o, frame);
+        if (!frame.paths[0].key) draw_wave(state, o, frame, 256);
         for (u32 p = 0; p < Frame::path_count; ++p) draw::hide(frame, kWave + p);
         hide_body(frame);
         state.generation = 0;
         return;
     }
-    if (o.generation != state.generation) {
-        draw_wave(state, o, frame);
+    const i32 scale = gain_scale(o);
+    if (o.generation != state.generation || scale != state.scale) {
+        draw_wave(state, o, frame, scale);
         state.generation = o.generation;
     }
     for (u32 p = 0; p < Frame::path_count; ++p)
@@ -183,7 +211,8 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
     // Each bin filled with a faint bar as tall as the sample is there, so the
     // waveform reads as solid behind its outline; the grains stay in front.
     for (u32 b = 0; b < kBars; ++b) {
-        const i32 top = -o.high[b] * kHalfHeight / 32768, bottom = -o.low[b] * kHalfHeight / 32768;  // pixels
+        const i32 top = -scaled(o.high[b], scale) * kHalfHeight / 32768;  // pixels
+        const i32 bottom = -scaled(o.low[b], scale) * kHalfHeight / 32768;
         const i32 half = (bottom - top) / 2 > 1 ? (bottom - top) / 2 : 1;
         draw::place(frame, kFirstBar + b,
                     kLeft * unit + static_cast<i32>(b) * kWidth * unit / static_cast<i32>(draw::overview_bins - 1),
@@ -342,7 +371,8 @@ inline void display(DisplayState& state, const draw::Input& input, Frame& frame)
         }
         // The waveform under it, lit as tall as the sample is there.
         const u32 bin = bin_of(begin + (g.frame >> 8), o.frames);
-        const i32 top = -o.high[bin] * kHalfHeight / 32768, bottom = -o.low[bin] * kHalfHeight / 32768;  // pixels
+        const i32 top = -scaled(o.high[bin], scale) * kHalfHeight / 32768;  // pixels
+        const i32 bottom = -scaled(o.low[bin], scale) * kHalfHeight / 32768;
         const i32 half = (bottom - top) / 2 > 1 ? (bottom - top) / 2 : 1;
         draw::place(frame, kFirstLit + i, x, (kMiddle + (top + bottom) / 2) * unit, half * unit / kHalfHeight,
                     kDim + static_cast<u32>(3 * gain / 32768), draw::fill_and_stroke);

@@ -42,6 +42,7 @@ struct DisplayState {
     opxy::u32 serial;      // the last note start seen
     opxy::u32 generation;  // the waveform's overview, 0 for none drawn
     opxy::u32 key;         // the waveform outlines' geometry key
+    opxy::i32 scale;       // the gain the outlines were drawn at, Q8; 0 for none
     opxy::u32 order;       // playheads started since the screen opened
     Playhead heads[kPlayheads];
 };

@@ -61,12 +61,13 @@ removes or alters something a person would check on the device updates its lines
 ## Shift and the stock sampler
 
 - [ ] While Shift is held, the header's edited row shows Start, End, Window and Gain: the start, the
-      end and the window's length as 0-99 of the sample, and the gain as -
+      end and the window's length as 0-99 of the sample, and the gain from -30 to +20, 0 for a new sample
 - [ ] Shift + encoder 1 moves the sample's start, and Shift + encoder 2 its end: the grains stay inside,
       and the waveform marks follow
 - [ ] Shift + encoder 3 slides the window between them, keeping its length, both ways, and stops at the
       sample's start and end
-- [ ] Shift + encoder 4 changes the gain heard
+- [ ] Shift + encoder 4 changes the gain heard, its caption follows, and the waveform grows taller as
+      the gain rises and flatter as it falls; a newly loaded sample shows at its usual height
 - [ ] A trim shorter than 128 frames plays nothing, and widening it brings the sound back
 - [ ] Releasing Shift: the header shows the machine's controls again, and turns edit them
 
@@ -162,7 +163,6 @@ Once the catalog entry is merged and released (the beta site from `staging`, ope
 Not failures, but worth confirming they haven't changed.
 
 - The screen runs apart from the audio: its grains are the controls' grains, not the voices' own
-- The screen can't read the gain, so it shows it as -
 - Cirrus has no control for direction or the loop markers; a region reversed on the stock sampler plays
   each grain backward
 - Clouds' feedback, diffuser and reverb aren't here: send the track to Stratus for them
